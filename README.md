@@ -1,6 +1,3 @@
-# capybara
-RUN, CAPY, RUN! 🦫
-
 # 🦫 RUN, CAPY, RUN!
 
 An endless runner game featuring a brave capybara escaping through a mystical jungle.
