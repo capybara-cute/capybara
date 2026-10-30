@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Gold"
+      "value": "Rust"
     },
     {
       "trait_type": "Theme",
-      "value": "Pool Day"
+      "value": "Oasis"
     },
     {
       "trait_type": "Accessory",
-      "value": "Leaf"
+      "value": "Golden Crown"
     },
     {
       "trait_type": "Pose",
-      "value": "Soaking"
+      "value": "Standing"
     }
   ]
 }

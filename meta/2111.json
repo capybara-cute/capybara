@@ -5,11 +5,11 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Gold"
+      "value": "Classic"
     },
     {
       "trait_type": "Theme",
-      "value": "Night Pool"
+      "value": "Forest"
     },
     {
       "trait_type": "Accessory",
@@ -17,7 +17,7 @@
     },
     {
       "trait_type": "Pose",
-      "value": "Soaking"
+      "value": "Standing"
     }
   ]
 }

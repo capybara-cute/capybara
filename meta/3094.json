@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Classic"
+      "value": "Cream"
     },
     {
       "trait_type": "Theme",
-      "value": "Sunset"
+      "value": "Oasis"
     },
     {
       "trait_type": "Accessory",
-      "value": "Leaf"
+      "value": "No Accessory"
     },
     {
       "trait_type": "Pose",
-      "value": "Soaking"
+      "value": "Standing"
     }
   ]
 }

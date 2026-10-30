@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Cream"
+      "value": "Gold"
     },
     {
       "trait_type": "Theme",
-      "value": "Pool Day"
+      "value": "Night Pool"
     },
     {
       "trait_type": "Accessory",
-      "value": "Bandana"
+      "value": "Cherry Blossom"
     },
     {
       "trait_type": "Pose",
-      "value": "Standing"
+      "value": "Soaking"
     }
   ]
 }

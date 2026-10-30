@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Classic"
+      "value": "Gold"
     },
     {
       "trait_type": "Theme",
-      "value": "Sunset"
+      "value": "Purple Night"
     },
     {
       "trait_type": "Accessory",
-      "value": "None"
+      "value": "Cherry Blossom"
     },
     {
       "trait_type": "Pose",
-      "value": "Soaking"
+      "value": "Standing"
     }
   ]
 }

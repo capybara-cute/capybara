@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Moss"
+      "value": "Rust"
     },
     {
       "trait_type": "Theme",
-      "value": "Purple Night"
+      "value": "Forest"
     },
     {
       "trait_type": "Accessory",
-      "value": "None"
+      "value": "Fresh Leaf"
     },
     {
       "trait_type": "Pose",
-      "value": "Standing"
+      "value": "Soaking"
     }
   ]
 }

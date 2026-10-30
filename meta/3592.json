@@ -13,11 +13,11 @@
     },
     {
       "trait_type": "Accessory",
-      "value": "Orange"
+      "value": "No Accessory"
     },
     {
       "trait_type": "Pose",
-      "value": "Soaking"
+      "value": "Standing"
     }
   ]
 }

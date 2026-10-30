@@ -5,7 +5,7 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Classic"
+      "value": "Dark"
     },
     {
       "trait_type": "Theme",
@@ -17,7 +17,7 @@
     },
     {
       "trait_type": "Pose",
-      "value": "Soaking"
+      "value": "Standing"
     }
   ]
 }

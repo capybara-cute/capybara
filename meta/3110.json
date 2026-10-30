@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Cream"
+      "value": "Rust"
     },
     {
       "trait_type": "Theme",
-      "value": "Pool Day"
+      "value": "Forest"
     },
     {
       "trait_type": "Accessory",
-      "value": "None"
+      "value": "Bandana"
     },
     {
       "trait_type": "Pose",
-      "value": "Standing"
+      "value": "Soaking"
     }
   ]
 }

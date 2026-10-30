@@ -5,7 +5,7 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Classic"
+      "value": "Rust"
     },
     {
       "trait_type": "Theme",
@@ -13,11 +13,11 @@
     },
     {
       "trait_type": "Accessory",
-      "value": "Leaf"
+      "value": "Bandana"
     },
     {
       "trait_type": "Pose",
-      "value": "Soaking"
+      "value": "Standing"
     }
   ]
 }

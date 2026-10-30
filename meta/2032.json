@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Cream"
+      "value": "Gold"
     },
     {
       "trait_type": "Theme",
-      "value": "Forest"
+      "value": "Stone Gray"
     },
     {
       "trait_type": "Accessory",
-      "value": "None"
+      "value": "No Accessory"
     },
     {
       "trait_type": "Pose",
-      "value": "Soaking"
+      "value": "Standing"
     }
   ]
 }

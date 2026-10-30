@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Gold"
+      "value": "Moss"
     },
     {
       "trait_type": "Theme",
-      "value": "Sunset"
+      "value": "Forest"
     },
     {
       "trait_type": "Accessory",
-      "value": "Bandana"
+      "value": "Orange on Head"
     },
     {
       "trait_type": "Pose",
-      "value": "Standing"
+      "value": "Soaking"
     }
   ]
 }

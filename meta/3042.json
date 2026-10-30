@@ -5,15 +5,15 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Cream"
+      "value": "Classic"
     },
     {
       "trait_type": "Theme",
-      "value": "Sunset"
+      "value": "Oasis"
     },
     {
       "trait_type": "Accessory",
-      "value": "Orange"
+      "value": "No Accessory"
     },
     {
       "trait_type": "Pose",

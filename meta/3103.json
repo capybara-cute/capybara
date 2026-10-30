@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Classic"
+      "value": "Gold"
     },
     {
       "trait_type": "Theme",
-      "value": "Purple Night"
+      "value": "Oasis"
     },
     {
       "trait_type": "Accessory",
-      "value": "Sunglasses"
+      "value": "Golden Star"
     },
     {
       "trait_type": "Pose",
-      "value": "Soaking"
+      "value": "Standing"
     }
   ]
 }
