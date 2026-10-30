@@ -1,0 +1,23 @@
+{
+  "name": "Cappybara #4863",
+  "description": "10,000 pixel capybaras on BNB Smart Chain. Chill, soak, and collect your capy.",
+  "image": "https://capyybara.fun/images/4863.svg",
+  "attributes": [
+    {
+      "trait_type": "Fur",
+      "value": "Classic"
+    },
+    {
+      "trait_type": "Theme",
+      "value": "Pool Day"
+    },
+    {
+      "trait_type": "Accessory",
+      "value": "Sakura"
+    },
+    {
+      "trait_type": "Pose",
+      "value": "Soaking"
+    }
+  ]
+}
