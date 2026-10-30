@@ -51,16 +51,16 @@
 <p><b>Kontrak ini tidak punya fungsi trait on-chain.</b> Trait tidak disetel dari halaman ini dan tidak bisa diubah lewat kontrak. Trait setiap token sudah tetap di file metadata yang di-host, dan dibaca marketplace lewat tokenURI.</p>
 <p>Tipe trait di metadata Cappybara (4 tipe):</p>
 <ul>
-<li><b>Fur:</b> Classic, Gold, Rust, Cream, Moss</li>
-<li><b>Theme:</b> Night Pool, Pool Day, Sunset, Oasis, Purple Night, Forest</li>
-<li><b>Accessory:</b> None, Orange, Bandana, Sakura, Sunglasses, Leaf, Gold Star, Golden Crown</li>
+<li><b>Fur:</b> Classic, Gold, Dark, Cream, Rust, Moss</li>
+<li><b>Theme:</b> Night Pool, Sunset, Forest, Purple Night, Stone Gray, Oasis</li>
+<li><b>Accessory:</b> No Accessory, Orange on Head, Bandana, Cherry Blossom, Fresh Leaf, Sunglasses, Golden Star, Golden Crown</li>
 <li><b>Pose:</b> Standing, Soaking</li>
 </ul>
-<p>File metadata direncanakan di <code>https://capyybara.fun/meta/N.json</code> (N = id token), dan gambar di <code>https://capyybara.fun/images/N.svg</code>. Mengubah trait berarti mengubah file metadata yang di-host itu — bukan transaksi kontrak. Bagian ini hanya informasi, tidak ada tombol yang menulis trait ke chain.</p></div>
+<p>File metadata live di <code>https://capyybara.fun/meta/N.json</code> (N = id token), dan gambar di <code>https://capyybara.fun/images/N.svg</code> — fase free (#1–5.000) sudah lengkap; fase paid (#5.001–10.000) menyusul. Mengubah trait berarti mengubah file metadata yang di-host itu — bukan transaksi kontrak. Bagian ini hanya informasi, tidak ada tombol yang menulis trait ke chain.</p></div>
 
 <div class="card"><h3>5. Base URI</h3>
 <label>Base URI</label><input id="inpBaseURI" value="https://capyybara.fun/meta/">
-<div class="warn"><b>PERHATIAN — baca dulu:</b> baseURI ini baru berfungsi <b>setelah metadata ter-host</b> di capyybara.fun (folder <code>meta/</code>). Metadata saat ini <b>MASIH PENDING (belum di-upload)</b>, jadi tokenURI akan 404 sampai metadata ter-host. Kamu <b>boleh melewati langkah ini sekarang</b> dan menyetel baseURI nanti setelah metadata ter-host — tokenURI bersifat dinamis dan bisa diperbaiki kapan saja oleh owner.</div>
+<div class="warn"><b>Status:</b> metadata fase free (#1–5.000) <b>sudah live</b> di capyybara.fun (folder <code>meta/</code>), dan baseURI sudah disetel ke <code>https://capyybara.fun/meta/</code> saat deploy — tokenURI token free sudah jalan. Metadata fase paid (#5.001–10.000) menyusul; karena baseURI-nya sama, tokenURI paid akan langsung jalan begitu file-nya live, tanpa perlu mengubah baseURI. TokenURI bersifat dinamis dan bisa diperbaiki kapan saja oleh owner.</div>
 <button id="setBase">Set Base URI &amp; Sign di Wallet</button>
 <button id="copyBase">Salin Data Set Base URI</button>
 <p id="baseStatus"></p></div>
