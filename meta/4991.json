@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Moss"
+      "value": "Dark"
     },
     {
       "trait_type": "Theme",
-      "value": "Purple Night"
+      "value": "Stone Gray"
     },
     {
       "trait_type": "Accessory",
-      "value": "None"
+      "value": "Bandana"
     },
     {
       "trait_type": "Pose",
-      "value": "Standing"
+      "value": "Soaking"
     }
   ]
 }

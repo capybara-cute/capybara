@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Classic"
+      "value": "Gold"
     },
     {
       "trait_type": "Theme",
-      "value": "Pool Day"
+      "value": "Forest"
     },
     {
       "trait_type": "Accessory",
-      "value": "Leaf"
+      "value": "Cherry Blossom"
     },
     {
       "trait_type": "Pose",
-      "value": "Soaking"
+      "value": "Standing"
     }
   ]
 }

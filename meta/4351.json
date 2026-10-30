@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Classic"
+      "value": "Rust"
     },
     {
       "trait_type": "Theme",
-      "value": "Pool Day"
+      "value": "Purple Night"
     },
     {
       "trait_type": "Accessory",
-      "value": "Bandana"
+      "value": "Golden Crown"
     },
     {
       "trait_type": "Pose",
-      "value": "Standing"
+      "value": "Soaking"
     }
   ]
 }

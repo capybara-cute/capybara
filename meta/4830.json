@@ -5,15 +5,15 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Classic"
+      "value": "Rust"
     },
     {
       "trait_type": "Theme",
-      "value": "Night Pool"
+      "value": "Forest"
     },
     {
       "trait_type": "Accessory",
-      "value": "Sunglasses"
+      "value": "No Accessory"
     },
     {
       "trait_type": "Pose",

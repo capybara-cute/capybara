@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Cream"
+      "value": "Rust"
     },
     {
       "trait_type": "Theme",
-      "value": "Purple Night"
+      "value": "Sunset"
     },
     {
       "trait_type": "Accessory",
-      "value": "Bandana"
+      "value": "Golden Star"
     },
     {
       "trait_type": "Pose",
-      "value": "Soaking"
+      "value": "Standing"
     }
   ]
 }
