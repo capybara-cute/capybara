@@ -1,0 +1,368 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cappybara · Deploy</title>
+<style>body{font-family:system-ui,Arial,sans-serif;background:#060c18;color:#e8edf7;max-width:720px;margin:0 auto;padding:20px}button{width:100%;padding:14px;font-size:17px;font-weight:700;cursor:pointer;background:#ffd21f;border:0;border-radius:10px;margin:8px 0}button:disabled{opacity:.5}input{width:100%;padding:12px;font-size:16px;border-radius:8px;border:1px solid #2b3a63;background:#0a1122;color:#e8edf7;box-sizing:border-box;margin:6px 0}.card{border:1px solid #2b3a63;border-radius:12px;padding:16px;margin:16px 0;background:#121a33}.warn{border:1px solid #ffaa00;border-radius:12px;padding:16px;margin:16px 0;background:#2a1f00}.ok{color:#4dff88}.err{color:#ff8a8a}code{word-break:break-all}pre{white-space:pre-wrap;word-break:break-all;background:#0a1122;padding:12px;border-radius:8px;max-height:300px;overflow:auto}textarea{width:100%;height:120px;background:#0a1122;color:#e8edf7;border:1px solid #2b3a63;border-radius:8px;padding:10px;box-sizing:border-box}table{width:100%;border-collapse:collapse}td{padding:6px 4px;border-bottom:1px solid #2b3a63;word-break:break-all}label{font-weight:700}#logPanel{white-space:pre-wrap;word-break:break-all;background:#0a1122;color:#e8edf7;border:1px solid #2b3a63;border-radius:8px;padding:10px;max-height:260px;overflow:auto;font-family:monospace;font-size:13px}</style></head><body>
+<h1>Cappybara · Deploy</h1>
+<h2>Tool owner untuk deploy &amp; kelola kontrak di BNB Smart Chain (56)</h2>
+<div class="warn"><b>Catatan owner — baca dulu:</b> tool ini hanya untuk owner. Semua transaksi ditandatangani langsung di wallet kamu; <b>seed phrase / private key tidak pernah keluar dari wallet dan tidak pernah diminta halaman ini</b>. Jangan pernah memasukkan seed phrase / private key di mana pun di halaman ini. Kontrak ini <b>belum diaudit</b> — uji dulu di <b>BNB Testnet</b> sebelum deploy mainnet. <b>Deploy di mainnet tidak bisa dibatalkan dan kamu bayar gas BNB asli.</b></div>
+<p id="detected">Mendeteksi wallet...</p>
+
+<div class="card"><h3>Aturan kontrak (baca sebelum sign)</h3><ul>
+<li>Nama: Cappybara — Symbol: CAPY (keduanya bisa diubah di Langkah 2 <i>sebelum</i> deploy; setelah deploy nama/symbol tidak bisa diubah).</li>
+<li>Supply: 10.000 total — 5.000 Free (mintFree) + 5.000 Paid (mintPaid), alokasi <b>terpisah</b>. mintPaid <b>tidak</b> menunggu alokasi free habis.</li>
+<li>ID token mengikuti fase situs: free = #1–5.000, paid = #5.001–10.000.</li>
+<li>mintFree: fee 0.0001 BNB per token. mintPaid: harga 0.001 BNB per token. Keduanya <b>diteruskan penuh ke treasury saat itu juga</b> — fee tidak ditahan di kontrak. Harga BNB ini <b>tetap (fixed)</b>: kontrak tidak memakai oracle harga, tidak memakai USDT, dan tidak memakai gate Binance Agent ID.</li>
+<li>Treasury awal = wallet deployer, bisa diubah owner lewat setTreasury. withdraw() hanya katup pengaman untuk BNB yang nyasar ke kontrak; dalam pemakaian normal saldo kontrak 0.</li>
+<li><b>Tidak ada</b> gate Binance Agent ID di kontrak (situs hanya menampilkan status Agent ID; wallet agent dan wallet biasa sama-sama bisa mint). <b>Tidak ada</b> batas per wallet. Hanya wallet pribadi yang bisa mint (contract caller ditolak).</li>
+<li>mintOpen default <b>false</b> — mint baru jalan setelah owner membukanya di Langkah 6.</li>
+<li>tokenURI = baseURI + id token + ".json". BaseURI awal kosong, disetel owner di Langkah 5.</li>
+<li>Mint yang sebenarnya terjadi di situs / lewat prompt agent, bukan dari halaman owner ini.</li>
+</ul></div>
+
+<div class="card"><h3>1. Jaringan</h3>
+<p>Buka halaman ini di browser dApp wallet kamu (OKX didahulukan, lalu MetaMask / Trust / Binance Wallet).</p>
+<button id="connect">Connect Wallet</button>
+<p id="account">Belum connect.</p>
+<button id="switchChain">Tambah / Pindah ke BNB Smart Chain (56)</button>
+<p id="chainMsg"></p></div>
+
+<div class="card"><h3>2. Deploy Kontrak Cappybara ERC-721</h3>
+<p>Kontrak ini memakai harga BNB tetap (mintFree 0.0001 BNB, mintPaid 0.001 BNB). <b>Tidak ada</b> input registry Agent ID, <b>tidak ada</b> input oracle harga, dan <b>tidak ada</b> input USDT — kontrak ini memang tidak punya ketiganya.</p>
+<label>Nama</label><input id="inpName" value="Cappybara">
+<label>Symbol</label><input id="inpSymbol" value="CAPY">
+<label>BaseURI awal (kosongkan dulu kalau belum siap)</label><input id="inpBase" value="" placeholder="kosong — bisa disetel nanti di Langkah 5">
+<button id="deploy">Deploy &amp; Sign di Wallet</button>
+<p id="deployStatus"></p><div id="deployResult"></div>
+<p><b>Data deploy manual (fallback):</b> kalau tombol deploy gagal, salin data ini dan kirim sebagai transaksi manual (ke alamat kosong / contract creation, value 0 BNB) dari wallet yang mendukung kirim data mentah.</p>
+<textarea id="deployData" readonly></textarea>
+<button id="copyDeploy">Salin Data Deploy</button>
+<button id="refreshDeploy">Perbarui Data Deploy dari Input</button>
+</div>
+
+<div class="card"><h3>3. Alamat Kontrak Mint</h3>
+<p>Alamat ini terisi otomatis dari receipt deploy, atau isi manual kalau kamu sudah punya alamat kontraknya.</p>
+<input id="inpContract" value="" placeholder="0x... (alamat kontrak hasil deploy)">
+<p id="bscLink"></p>
+<button id="check">Cek Status Kontrak</button>
+<p id="checkWarn"></p>
+<table><tbody id="checkRows"></tbody></table>
+<p id="checkStatus"></p></div>
+
+<div class="card"><h3>4. Trait &amp; Metadata (Info Saja — Bukan Pengaturan On-Chain)</h3>
+<p><b>Kontrak ini tidak punya fungsi trait on-chain.</b> Trait tidak disetel dari halaman ini dan tidak bisa diubah lewat kontrak. Trait setiap token sudah tetap di file metadata yang di-host, dan dibaca marketplace lewat tokenURI.</p>
+<p>Tipe trait di metadata Cappybara (4 tipe):</p>
+<ul>
+<li><b>Fur:</b> Classic, Gold, Rust, Cream, Moss</li>
+<li><b>Theme:</b> Night Pool, Pool Day, Sunset, Oasis, Purple Night, Forest</li>
+<li><b>Accessory:</b> None, Orange, Bandana, Sakura, Sunglasses, Leaf, Gold Star, Golden Crown</li>
+<li><b>Pose:</b> Standing, Soaking</li>
+</ul>
+<p>File metadata direncanakan di <code>https://capyybara.fun/meta/N.json</code> (N = id token), dan gambar di <code>https://capyybara.fun/images/N.svg</code>. Mengubah trait berarti mengubah file metadata yang di-host itu — bukan transaksi kontrak. Bagian ini hanya informasi, tidak ada tombol yang menulis trait ke chain.</p></div>
+
+<div class="card"><h3>5. Base URI</h3>
+<label>Base URI</label><input id="inpBaseURI" value="https://capyybara.fun/meta/">
+<div class="warn"><b>PERHATIAN — baca dulu:</b> baseURI ini baru berfungsi <b>setelah metadata ter-host</b> di capyybara.fun (folder <code>meta/</code>). Metadata saat ini <b>MASIH PENDING (belum di-upload)</b>, jadi tokenURI akan 404 sampai metadata ter-host. Kamu <b>boleh melewati langkah ini sekarang</b> dan menyetel baseURI nanti setelah metadata ter-host — tokenURI bersifat dinamis dan bisa diperbaiki kapan saja oleh owner.</div>
+<button id="setBase">Set Base URI &amp; Sign di Wallet</button>
+<button id="copyBase">Salin Data Set Base URI</button>
+<p id="baseStatus"></p></div>
+
+<div class="card"><h3>6. Mint</h3>
+<p>Mint yang sebenarnya terjadi di situs / lewat prompt agent, <b>bukan</b> dari halaman owner ini. Halaman ini hanya membuka/menutup mint dan menampilkan counter live. Tidak ada tombol mint owner di sini.</p>
+<button id="openMint">Buka Mint (setMintOpen true) &amp; Sign di Wallet</button>
+<button id="closeMint">Tutup Mint (setMintOpen false) &amp; Sign di Wallet</button>
+<button id="copyOpen">Salin Data Buka Mint</button>
+<button id="copyClose">Salin Data Tutup Mint</button>
+<p id="openStatus"></p>
+<button id="refreshCounters">Perbarui Counter Mint</button>
+<table><tbody id="counterRows"></tbody></table>
+<p id="counterStatus"></p></div>
+
+<div class="card"><h3>7. Tarik Dana (BNB Saja)</h3>
+<p>Dalam pemakaian normal, fee mint langsung diteruskan ke treasury sehingga <b>saldo kontrak 0</b>. Tombol ini hanya untuk BNB yang nyasar ke kontrak: withdraw() milik owner mengirim <b>seluruh</b> saldo kontrak ke treasury, dan revert kalau saldo kosong. <b>Kontrak ini tidak menangani USDT sama sekali</b> — tidak ada fungsi tarik USDT.</p>
+<p id="balValue">Saldo kontrak: (isi alamat kontrak di Langkah 3 dulu)</p>
+<button id="refreshBal">Perbarui Saldo Kontrak</button>
+<button id="withdrawBtn">Tarik Seluruh Saldo ke Treasury (withdraw) &amp; Sign di Wallet</button>
+<button id="copyWithdraw">Salin Data Withdraw</button>
+<p id="withdrawStatus"></p></div>
+
+<div class="card"><h3>Log</h3>
+<p>Semua aksi halaman ini tercatat di bawah dengan waktu.</p>
+<pre id="logPanel"></pre>
+<button id="copyLog">Salin Log</button>
+<button id="clearLog">Hapus Log</button></div>
+
+<p><small>Verifikasi setelah deploy: bandingkan creation bytecode di halaman ini dengan input transaksi di BscScan. Kontrak ini belum diverifikasi source-nya di BscScan — verifikasi source adalah langkah terpisah setelah deploy.</small></p>
+
+<script>
+const BYTECODE = "0x60806040526008805460ff60a01b191690553480156200001d575f80fd5b506040516200241e3803806200241e8339810160408190526200004091620001b9565b82825f6200004f8382620002d0565b5060016200005e8282620002d0565b5050506200007b62000075620000a660201b60201c565b620000aa565b6007620000898282620002d0565b5050600880546001600160a01b0319163317905550620003989050565b3390565b600680546001600160a01b038381166001600160a01b0319831681179093556040519116919082907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0905f90a35050565b634e487b7160e01b5f52604160045260245ffd5b5f82601f8301126200011f575f80fd5b81516001600160401b03808211156200013c576200013c620000fb565b604051601f8301601f19908116603f01168101908282118183101715620001675762000167620000fb565b8160405283815260209250868385880101111562000183575f80fd5b5f91505b83821015620001a6578582018301518183018401529082019062000187565b5f93810190920192909252949350505050565b5f805f60608486031215620001cc575f80fd5b83516001600160401b0380821115620001e3575f80fd5b620001f1878388016200010f565b9450602086015191508082111562000207575f80fd5b62000215878388016200010f565b935060408601519150808211156200022b575f80fd5b506200023a868287016200010f565b9150509250925092565b600181811c908216806200025957607f821691505b6020821081036200027857634e487b7160e01b5f52602260045260245ffd5b50919050565b601f821115620002cb575f81815260208120601f850160051c81016020861015620002a65750805b601f850160051c820191505b81811015620002c757828155600101620002b2565b5050505b505050565b81516001600160401b03811115620002ec57620002ec620000fb565b6200030481620002fd845462000244565b846200027e565b602080601f8311600181146200033a575f8415620003225750858301515b5f19600386901b1c1916600185901b178555620002c7565b5f85815260208120601f198616915b828110156200036a5788860151825594840194600190910190840162000349565b50858210156200038857878501515f19600388901b60f8161c191681555b5050505050600190811b01905550565b61207880620003a65f395ff3fe6080604052600436106101fc575f3560e01c806370a0823111610113578063a41467331161009d578063e985e9c51161006d578063e985e9c514610548578063f0f4426014610567578063f2fde38b14610586578063f8004d31146105a5578063fe878b1d1461049a575f80fd5b8063a4146733146104e2578063b88d4fde146104f5578063c87b56dd14610514578063d10a1a2b14610533575f80fd5b806395a376f4116100e357806395a376f41461046c57806395d89b41146104865780639858cf191461049a5780639a90574b146104af578063a22cb465146104c3575f80fd5b806370a0823114610403578063715018a61461042257806388a52487146104365780638da5cb5b1461044f575f80fd5b80632806b8fb1161019457806355f804b31161016457806355f804b31461037e5780635a781a6b1461039d57806361d027b3146103b15780636352211e146103d05780636c0360eb146103ef575f80fd5b80632806b8fb1461032157806332cb6b0c146103365780633ccfd60b1461034b57806342842e0e1461035f575f80fd5b806318160ddd116101cf57806318160ddd146102ad57806323b872dd146102cf57806324bbd049146102ee57806326c7f77c1461030e575f80fd5b806301ffc9a71461020057806306fdde0314610234578063081812fc14610255578063095ea7b31461028c575b5f80fd5b34801561020b575f80fd5b5061021f61021a3660046119ee565b6105c4565b60405190151581526020015b60405180910390f35b34801561023f575f80fd5b50610248610615565b60405161022b9190611a5d565b348015610260575f80fd5b5061027461026f366004611a6f565b6106a4565b6040516001600160a01b03909116815260200161022b565b348015610297575f80fd5b506102ab6102a6366004611aa1565b6106c9565b005b3480156102b8575f80fd5b506102c16107e2565b60405190815260200161022b565b3480156102da575f80fd5b506102ab6102e9366004611ac9565b6107f8565b3480156102f9575f80fd5b5060085461021f90600160a01b900460ff1681565b6102ab61031c366004611a6f565b610829565b34801561032c575f80fd5b506102c1600a5481565b348015610341575f80fd5b506102c161271081565b348015610356575f80fd5b506102ab610a67565b34801561036a575f80fd5b506102ab610379366004611ac9565b610b37565b348015610389575f80fd5b506102ab610398366004611b02565b610b51565b3480156103a8575f80fd5b506102c1610ba4565b3480156103bc575f80fd5b50600854610274906001600160a01b031681565b3480156103db575f80fd5b506102746103ea366004611a6f565b610bb5565b3480156103fa575f80fd5b50610248610c14565b34801561040e575f80fd5b506102c161041d366004611b6e565b610ca0565b34801561042d575f80fd5b506102ab610d24565b348015610441575f80fd5b506102c1655af3107a400081565b34801561045a575f80fd5b506006546001600160a01b0316610274565b348015610477575f80fd5b506102c166038d7ea4c6800081565b348015610491575f80fd5b50610248610d37565b3480156104a5575f80fd5b506102c161138881565b3480156104ba575f80fd5b506102c1610d46565b3480156104ce575f80fd5b506102ab6104dd366004611b96565b610d57565b6102ab6104f0366004611a6f565b610d62565b348015610500575f80fd5b506102ab61050f366004611bdb565b610efb565b34801561051f575f80fd5b5061024861052e366004611a6f565b610f33565b34801561053e575f80fd5b506102c160095481565b348015610553575f80fd5b5061021f610562366004611cb0565b610fbf565b348015610572575f80fd5b506102ab610581366004611b6e565b610fec565b348015610591575f80fd5b506102ab6105a0366004611b6e565b61108f565b3480156105b0575f80fd5b506102ab6105bf366004611cd8565b611108565b5f6001600160e01b031982166380ac58cd60e01b14806105f457506001600160e01b03198216635b5e139f60e01b145b8061060f57506301ffc9a760e01b6001600160e01b03198316145b92915050565b60605f805461062390611cf1565b80601f016020809104026020016040519081016040528092919081815260200182805461064f90611cf1565b801561069a5780601f106106715761010080835404028352916020019161069a565b820191905f5260205f20905b81548152906001019060200180831161067d57829003601f168201915b5050505050905090565b5f6106ae8261115d565b505f908152600460205260409020546001600160a01b031690565b5f6106d382610bb5565b9050806001600160a01b0316836001600160a01b0316036107455760405162461bcd60e51b815260206004820152602160248201527f4552433732313a20617070726f76616c20746f2063757272656e74206f776e656044820152603960f91b60648201526084015b60405180910390fd5b336001600160a01b038216148061076157506107618133610fbf565b6107d35760405162461bcd60e51b815260206004820152603d60248201527f4552433732313a20617070726f76652063616c6c6572206973206e6f7420746f60448201527f6b656e206f776e6572206f7220617070726f76656420666f7220616c6c000000606482015260840161073c565b6107dd83836111bb565b505050565b5f600a546009546107f39190611d3d565b905090565b6108023382611228565b61081e5760405162461bcd60e51b815260040161073c90611d50565b6107dd838383611286565b600854600160a01b900460ff166108705760405162461bcd60e51b815260206004820152600b60248201526a1b5a5b9d0818db1bdcd95960aa1b604482015260640161073c565b3332146108ae5760405162461bcd60e51b815260206004820152600c60248201526b6e6f20636f6e74726163747360a01b604482015260640161073c565b5f81116108e85760405162461bcd60e51b8152602060048201526008602482015267717479207a65726f60c01b604482015260640161073c565b61138881600a546108f99190611d3d565b11156109375760405162461bcd60e51b815260206004820152600d60248201526c1c185a59081cdbdb19081bdd5d609a1b604482015260640161073c565b6109488166038d7ea4c68000611d9d565b34146109845760405162461bcd60e51b815260206004820152600b60248201526a77726f6e6720707269636560a81b604482015260640161073c565b5f5b818110156109d1576001600a5f8282546109a09190611d3d565b9091555050600a546109bf9033906109ba90611388611d3d565b6113e8565b806109c981611db4565b915050610986565b506008546040515f916001600160a01b03169034908381818185875af1925050503d805f8114610a1c576040519150601f19603f3d011682016040523d82523d5f602084013e610a21565b606091505b5050905080610a635760405162461bcd60e51b815260206004820152600e60248201526d199bdc9dd85c990819985a5b195960921b604482015260640161073c565b5050565b610a6f611401565b4780610aa55760405162461bcd60e51b8152602060048201526005602482015264656d70747960d81b604482015260640161073c565b6008546040515f916001600160a01b03169083908381818185875af1925050503d805f8114610aef576040519150601f19603f3d011682016040523d82523d5f602084013e610af4565b606091505b5050905080610a635760405162461bcd60e51b815260206004820152600f60248201526e1dda5d1a191c985dc819985a5b1959608a1b604482015260640161073c565b6107dd83838360405180602001604052805f815250610efb565b610b59611401565b6007610b66828483611e19565b507ff9c7803e94e0d3c02900d8a90893a6d5e90dd04d32a4cfe825520f82bf9f32f68282604051610b98929190611ed5565b60405180910390a15050565b5f6009546113886107f39190611f03565b5f818152600260205260408120546001600160a01b03168061060f5760405162461bcd60e51b8152602060048201526018602482015277115490cdcc8c4e881a5b9d985b1a59081d1bdad95b88125160421b604482015260640161073c565b60078054610c2190611cf1565b80601f0160208091040260200160405190810160405280929190818152602001828054610c4d90611cf1565b8015610c985780601f10610c6f57610100808354040283529160200191610c98565b820191905f5260205f20905b815481529060010190602001808311610c7b57829003601f168201915b505050505081565b5f6001600160a01b038216610d095760405162461bcd60e51b815260206004820152602960248201527f4552433732313a2061646472657373207a65726f206973206e6f7420612076616044820152683634b21037bbb732b960b91b606482015260840161073c565b506001600160a01b03165f9081526003602052604090205490565b610d2c611401565b610d355f61145b565b565b60606001805461062390611cf1565b5f600a546113886107f39190611f03565b610a633383836114ac565b600854600160a01b900460ff16610da95760405162461bcd60e51b815260206004820152600b60248201526a1b5a5b9d0818db1bdcd95960aa1b604482015260640161073c565b333214610de75760405162461bcd60e51b815260206004820152600c60248201526b6e6f20636f6e74726163747360a01b604482015260640161073c565b5f8111610e215760405162461bcd60e51b8152602060048201526008602482015267717479207a65726f60c01b604482015260640161073c565b61138881600954610e329190611d3d565b1115610e705760405162461bcd60e51b815260206004820152600d60248201526c199c9959481cdbdb19081bdd5d609a1b604482015260640161073c565b610e8081655af3107a4000611d9d565b3414610eba5760405162461bcd60e51b815260206004820152600960248201526877726f6e672066656560b81b604482015260640161073c565b5f5b818110156109d157600160095f828254610ed69190611d3d565b92505081905550610ee9336009546113e8565b80610ef381611db4565b915050610ebc565b610f053383611228565b610f215760405162461bcd60e51b815260040161073c90611d50565b610f2d84848484611579565b50505050565b5f818152600260205260409020546060906001600160a01b0316610f875760405162461bcd60e51b815260206004820152600b60248201526a1b9bdb995e1a5cdd195b9d60aa1b604482015260640161073c565b610f8f6115ac565b610f98836115bb565b604051602001610fa9929190611f16565b6040516020818303038152906040529050919050565b6001600160a01b039182165f90815260056020908152604080832093909416825291909152205460ff1690565b610ff4611401565b6001600160a01b03811661103a5760405162461bcd60e51b815260206004820152600d60248201526c7a65726f20747265617375727960981b604482015260640161073c565b600880546001600160a01b0319166001600160a01b0383169081179091556040519081527f3c864541ef71378c6229510ed90f376565ee42d9c5e0904a984a9e863e6db44f906020015b60405180910390a150565b611097611401565b6001600160a01b0381166110fc5760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b606482015260840161073c565b6111058161145b565b50565b611110611401565b60088054821515600160a01b0260ff60a01b199091161790556040517f0b4905c1ec70314aeecbb4133671ed6652620ca58efea74ec87000eceec8d9859061108490831515815260200190565b5f818152600260205260409020546001600160a01b03166111055760405162461bcd60e51b8152602060048201526018602482015277115490cdcc8c4e881a5b9d985b1a59081d1bdad95b88125160421b604482015260640161073c565b5f81815260046020526040902080546001600160a01b0319166001600160a01b03841690811790915581906111ef82610bb5565b6001600160a01b03167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b92560405160405180910390a45050565b5f8061123383610bb5565b9050806001600160a01b0316846001600160a01b0316148061125a575061125a8185610fbf565b8061127e5750836001600160a01b0316611273846106a4565b6001600160a01b0316145b949350505050565b826001600160a01b031661129982610bb5565b6001600160a01b0316146112bf5760405162461bcd60e51b815260040161073c90611f54565b6001600160a01b0382166113215760405162461bcd60e51b8152602060048201526024808201527f4552433732313a207472616e7366657220746f20746865207a65726f206164646044820152637265737360e01b606482015260840161073c565b826001600160a01b031661133482610bb5565b6001600160a01b03161461135a5760405162461bcd60e51b815260040161073c90611f54565b5f81815260046020908152604080832080546001600160a01b03199081169091556001600160a01b038781168086526003855283862080545f1901905590871680865283862080546001019055868652600290945282852080549092168417909155905184937fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef91a4505050565b610a63828260405180602001604052805f81525061164b565b6006546001600160a01b03163314610d355760405162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015260640161073c565b600680546001600160a01b038381166001600160a01b0319831681179093556040519116919082907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0905f90a35050565b816001600160a01b0316836001600160a01b03160361150d5760405162461bcd60e51b815260206004820152601960248201527f4552433732313a20617070726f766520746f2063616c6c657200000000000000604482015260640161073c565b6001600160a01b038381165f81815260056020908152604080832094871680845294825291829020805460ff191686151590811790915591519182527f17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31910160405180910390a3505050565b611584848484611286565b6115908484848461167d565b610f2d5760405162461bcd60e51b815260040161073c90611f99565b60606007805461062390611cf1565b60605f6115c78361177a565b60010190505f8167ffffffffffffffff8111156115e6576115e6611bc7565b6040519080825280601f01601f191660200182016040528015611610576020820181803683370190505b5090508181016020015b5f19016f181899199a1a9b1b9c1cb0b131b232b360811b600a86061a8153600a850494508461161a57509392505050565b6116558383611851565b6116615f84848461167d565b6107dd5760405162461bcd60e51b815260040161073c90611f99565b5f6001600160a01b0384163b1561176f57604051630a85bd0160e11b81526001600160a01b0385169063150b7a02906116c0903390899088908890600401611feb565b6020604051808303815f875af19250505080156116fa575060408051601f3d908101601f191682019092526116f791810190612027565b60015b611755573d808015611727576040519150601f19603f3d011682016040523d82523d5f602084013e61172c565b606091505b5080515f0361174d5760405162461bcd60e51b815260040161073c90611f99565b805181602001fd5b6001600160e01b031916630a85bd0160e11b14905061127e565b506001949350505050565b5f8072184f03e93ff9f4daa797ed6e38ed64bf6a1f0160401b83106117b85772184f03e93ff9f4daa797ed6e38ed64bf6a1f0160401b830492506040015b6d04ee2d6d415b85acef810000000083106117e4576d04ee2d6d415b85acef8100000000830492506020015b662386f26fc10000831061180257662386f26fc10000830492506010015b6305f5e100831061181a576305f5e100830492506008015b612710831061182e57612710830492506004015b60648310611840576064830492506002015b600a831061060f5760010192915050565b6001600160a01b0382166118a75760405162461bcd60e51b815260206004820181905260248201527f4552433732313a206d696e7420746f20746865207a65726f2061646472657373604482015260640161073c565b5f818152600260205260409020546001600160a01b03161561190b5760405162461bcd60e51b815260206004820152601c60248201527f4552433732313a20746f6b656e20616c7265616479206d696e74656400000000604482015260640161073c565b5f818152600260205260409020546001600160a01b03161561196f5760405162461bcd60e51b815260206004820152601c60248201527f4552433732313a20746f6b656e20616c7265616479206d696e74656400000000604482015260640161073c565b6001600160a01b0382165f81815260036020908152604080832080546001019055848352600290915280822080546001600160a01b0319168417905551839291907fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef908290a45050565b6001600160e01b031981168114611105575f80fd5b5f602082840312156119fe575f80fd5b8135611a09816119d9565b9392505050565b5f5b83811015611a2a578181015183820152602001611a12565b50505f910152565b5f8151808452611a49816020860160208601611a10565b601f01601f19169290920160200192915050565b602081525f611a096020830184611a32565b5f60208284031215611a7f575f80fd5b5035919050565b80356001600160a01b0381168114611a9c575f80fd5b919050565b5f8060408385031215611ab2575f80fd5b611abb83611a86565b946020939093013593505050565b5f805f60608486031215611adb575f80fd5b611ae484611a86565b9250611af260208501611a86565b9150604084013590509250925092565b5f8060208385031215611b13575f80fd5b823567ffffffffffffffff80821115611b2a575f80fd5b818501915085601f830112611b3d575f80fd5b813581811115611b4b575f80fd5b866020828501011115611b5c575f80fd5b60209290920196919550909350505050565b5f60208284031215611b7e575f80fd5b611a0982611a86565b80358015158114611a9c575f80fd5b5f8060408385031215611ba7575f80fd5b611bb083611a86565b9150611bbe60208401611b87565b90509250929050565b634e487b7160e01b5f52604160045260245ffd5b5f805f8060808587031215611bee575f80fd5b611bf785611a86565b9350611c0560208601611a86565b925060408501359150606085013567ffffffffffffffff80821115611c28575f80fd5b818701915087601f830112611c3b575f80fd5b813581811115611c4d57611c4d611bc7565b604051601f8201601f19908116603f01168101908382118183101715611c7557611c75611bc7565b816040528281528a6020848701011115611c8d575f80fd5b826020860160208301375f60208483010152809550505050505092959194509250565b5f8060408385031215611cc1575f80fd5b611cca83611a86565b9150611bbe60208401611a86565b5f60208284031215611ce8575f80fd5b611a0982611b87565b600181811c90821680611d0557607f821691505b602082108103611d2357634e487b7160e01b5f52602260045260245ffd5b50919050565b634e487b7160e01b5f52601160045260245ffd5b8082018082111561060f5761060f611d29565b6020808252602d908201527f4552433732313a2063616c6c6572206973206e6f7420746f6b656e206f776e6560408201526c1c881bdc88185c1c1c9bdd9959609a1b606082015260800190565b808202811582820484141761060f5761060f611d29565b5f60018201611dc557611dc5611d29565b5060010190565b601f8211156107dd575f81815260208120601f850160051c81016020861015611df25750805b601f850160051c820191505b81811015611e1157828155600101611dfe565b505050505050565b67ffffffffffffffff831115611e3157611e31611bc7565b611e4583611e3f8354611cf1565b83611dcc565b5f601f841160018114611e76575f8515611e5f5750838201355b5f19600387901b1c1916600186901b178355611ece565b5f83815260209020601f19861690835b82811015611ea65786850135825560209485019460019092019101611e86565b5086821015611ec2575f1960f88860031b161c19848701351681555b505060018560011b0183555b5050505050565b60208152816020820152818360408301375f818301604090810191909152601f909201601f19160101919050565b8181038181111561060f5761060f611d29565b5f8351611f27818460208801611a10565b835190830190611f3b818360208801611a10565b64173539b7b760d91b9101908152600501949350505050565b60208082526025908201527f4552433732313a207472616e736665722066726f6d20696e636f72726563742060408201526437bbb732b960d91b606082015260800190565b60208082526032908201527f4552433732313a207472616e7366657220746f206e6f6e20455243373231526560408201527131b2b4bb32b91034b6b83632b6b2b73a32b960711b606082015260800190565b6001600160a01b03858116825284166020820152604081018390526080606082018190525f9061201d90830184611a32565b9695505050505050565b5f60208284031215612037575f80fd5b8151611a09816119d956fea26469706673582212203508efe9cbcb971eeb6cb4e9a9d32295f55718f8483590b32362f3a16f59db7e64736f6c63430008140033";
+const SEL = { setBaseURI:"55f804b3", setMintOpen:"f8004d31", owner:"8da5cb5b", mintOpen:"24bbd049", totalSupply:"18160ddd", freeRemaining:"5a781a6b", paidRemaining:"9a90574b", FREE_MINT_FEE:"88a52487", PAID_MINT_PRICE:"95a376f4", treasury:"61d027b3", baseURI:"6c0360eb", withdraw:"3ccfd60b" };
+const BSC = { chainId:"0x38", chainName:"BNB Smart Chain", nativeCurrency:{name:"BNB",symbol:"BNB",decimals:18}, rpcUrls:["https://bsc-dataseed.binance.org/"], blockExplorerUrls:["https://bscscan.com"] };
+let provider = null, account = null, ownerKnown = null;
+function pickProvider(){
+  if (window.okxwallet) return { p: window.okxwallet, name: "OKX" };
+  if (window.ethereum) return { p: window.ethereum, name: "Ethereum" };
+  return null;
+}
+function $(id){ return document.getElementById(id); }
+function setText(id, t){ $(id).textContent = t; }
+function setHtml(id, h){ $(id).innerHTML = h; }
+function log(msg){
+  try {
+    const t = new Date().toLocaleString("id-ID");
+    const el = $("logPanel");
+    el.textContent += "[" + t + "] " + msg + "\n";
+    el.scrollTop = el.scrollHeight;
+  } catch(e){}
+}
+(function init(){
+  const d = pickProvider();
+  if (!d) { setText("detected", "Wallet tidak terdeteksi. Buka halaman ini di browser dApp OKX / MetaMask / Trust."); log("Wallet tidak terdeteksi."); return; }
+  provider = d.p;
+  setText("detected", "Wallet terdeteksi: " + d.name + " (OKX didahulukan).");
+  log("Wallet terdeteksi: " + d.name + ".");
+  if (provider.on) {
+    provider.on("accountsChanged", function(a){ account = a && a[0] ? a[0] : null; log("Akun berubah."); showAccount(); });
+    provider.on("chainChanged", function(){ log("Chain berubah."); showAccount(); });
+  }
+  $("refreshDeploy").onclick = function(){ updateDeployData(); log("Data deploy diperbarui dari input."); };
+  updateDeployData();
+  log("Halaman siap. Isi alamat kontrak di Langkah 3 setelah deploy.");
+})();
+function showAccount(){
+  if (!account) { setText("account", "Belum connect."); return; }
+  provider.request({method:"eth_chainId"}).then(function(cid){
+    setText("account", "Terhubung: " + account + " | chainId: " + cid + (cid === "0x38" ? " (BNB Smart Chain ✓)" : " (BUKAN BNB 56 — pindah chain dulu)"));
+  }).catch(function(){ setText("account", "Terhubung: " + account); });
+}
+$("connect").onclick = async function(){
+  if (!provider) return;
+  try {
+    const a = await provider.request({method:"eth_requestAccounts"});
+    account = a[0]; showAccount(); log("Connect berhasil: " + account + ".");
+  } catch(e){ setText("account", "Gagal connect: " + (e && e.message ? e.message : e)); log("Gagal connect: " + (e && e.message ? e.message : e)); }
+};
+$("switchChain").onclick = async function(){
+  if (!provider) return;
+  try {
+    await provider.request({method:"wallet_switchEthereumChain", params:[{chainId:"0x38"}]});
+    setText("chainMsg", "Sudah di BNB Smart Chain (56)."); log("Pindah ke BNB Smart Chain (56).");
+  } catch(e) {
+    if (e && e.code === 4902) {
+      try { await provider.request({method:"wallet_addEthereumChain", params:[BSC]}); setText("chainMsg", "BNB Smart Chain ditambahkan & dipilih."); log("BNB Smart Chain ditambahkan & dipilih."); }
+      catch(e2){ setText("chainMsg", "Gagal tambah chain: " + (e2 && e2.message ? e2.message : e2)); log("Gagal tambah chain: " + (e2 && e2.message ? e2.message : e2)); }
+    } else { setText("chainMsg", "Gagal pindah chain: " + (e && e.message ? e.message : e)); log("Gagal pindah chain: " + (e && e.message ? e.message : e)); }
+  }
+  showAccount();
+};
+function pad32hex(hex){ hex = hex.replace(/^0x/, ""); while (hex.length < 64) hex = "0" + hex; return hex; }
+function encUint(n){ return pad32hex(BigInt(n).toString(16)); }
+function encBool(b){ return pad32hex(b ? "1" : "0"); }
+function encString(s){
+  const bytes = new TextEncoder().encode(s);
+  let hex = "";
+  bytes.forEach(function(b){ hex += b.toString(16).padStart(2, "0"); });
+  const len = pad32hex(bytes.length.toString(16));
+  while (hex.length % 64 !== 0) hex += "00";
+  return len + hex;
+}
+function encConstructor(name, symbol, base){
+  const head = pad32hex("60") + pad32hex("a0") + pad32hex("e0");
+  return head + encString(name) + encString(symbol) + encString(base);
+}
+function buildDeployData(){
+  return BYTECODE + encConstructor($("inpName").value, $("inpSymbol").value, $("inpBase").value);
+}
+function updateDeployData(){ $("deployData").value = buildDeployData(); }
+async function sendTx(to, data, value){
+  if (!account) throw new Error("Connect wallet dulu (Langkah 1).");
+  const params = [{ from: account, data: data, value: value || "0x0" }];
+  if (to) params[0].to = to;
+  return await provider.request({method:"eth_sendTransaction", params: params});
+}
+function pollReceipt(hash, onDone){
+  let tries = 0;
+  const iv = setInterval(function(){
+    tries++;
+    provider.request({method:"eth_getTransactionReceipt", params:[hash]}).then(function(r){
+      if (r && r.blockNumber) { clearInterval(iv); onDone(r); }
+      else if (tries > 100) { clearInterval(iv); onDone(null); }
+    }).catch(function(){ if (tries > 100) { clearInterval(iv); onDone(null); } });
+  }, 3000);
+}
+$("deploy").onclick = async function(){
+  try {
+    updateDeployData();
+    setText("deployStatus", "Mengirim transaksi deploy — konfirmasi di wallet...");
+    log("Mengirim transaksi deploy...");
+    const hash = await sendTx(null, buildDeployData(), "0x0");
+    setHtml("deployResult", "Tx hash: <a target=\"_blank\" rel=\"noopener\" href=\"https://bscscan.com/tx/" + hash + "\">" + hash + "</a><br>Menunggu receipt (kontrak address)... jangan tutup halaman ini.");
+    setText("deployStatus", "Transaksi terkirim. Menunggu konfirmasi...");
+    log("Deploy terkirim, tx: " + hash + ". Menunggu receipt...");
+    pollReceipt(hash, function(r){
+      if (r && r.contractAddress) {
+        $("inpContract").value = r.contractAddress;
+        setHtml("deployResult", "Tx hash: <a target=\"_blank\" rel=\"noopener\" href=\"https://bscscan.com/tx/" + hash + "\">" + hash + "</a><br><b>Alamat kontrak: " + r.contractAddress + "</b><br><a target=\"_blank\" rel=\"noopener\" href=\"https://bscscan.com/address/" + r.contractAddress + "\">Lihat kontrak di BscScan</a>");
+        setText("deployStatus", "Deploy berhasil. Lanjut ke Langkah 5 (Base URI, boleh dilewati), Langkah 6 (Buka Mint), dan Langkah 3 untuk verifikasi.");
+        log("Deploy berhasil. Alamat kontrak: " + r.contractAddress + ".");
+        updateBscLink();
+      } else {
+        setText("deployStatus", "Receipt belum ditemukan setelah ~5 menit. Cek tx di BscScan, lalu isi alamat kontrak manual di Langkah 3.");
+        log("Receipt deploy tidak ditemukan setelah ~5 menit.");
+      }
+    });
+  } catch(e){ setText("deployStatus", "Gagal deploy: " + (e && e.message ? e.message : e)); log("Gagal deploy: " + (e && e.message ? e.message : e)); }
+};
+$("copyDeploy").onclick = function(){ updateDeployData(); $("deployData").select(); document.execCommand("copy"); setText("deployStatus", "Data deploy disalin."); log("Data deploy disalin."); };
+function needContract(){
+  const c = $("inpContract").value.trim();
+  if (!/^0x[0-9a-fA-F]{40}$/.test(c)) throw new Error("Isi alamat kontrak dulu (Langkah 3, hasil deploy / manual).");
+  return c;
+}
+function updateBscLink(){
+  const c = $("inpContract").value.trim();
+  if (/^0x[0-9a-fA-F]{40}$/.test(c)) setHtml("bscLink", "<a target=\"_blank\" rel=\"noopener\" href=\"https://bscscan.com/address/" + c + "\">Lihat kontrak di BscScan</a>");
+}
+$("inpContract").addEventListener("input", function(){ updateBscLink(); log("Alamat kontrak diubah manual."); });
+$("setBase").onclick = async function(){
+  try {
+    const c = needContract();
+    const data = "0x" + SEL.setBaseURI + encString($("inpBaseURI").value);
+    setText("baseStatus", "Mengirim setBaseURI — konfirmasi di wallet...");
+    log("Mengirim setBaseURI ke " + $("inpBaseURI").value + "...");
+    const hash = await sendTx(c, data, "0x0");
+    setHtml("baseStatus", "Tx terkirim: <a target=\"_blank\" rel=\"noopener\" href=\"https://bscscan.com/tx/" + hash + "\">" + hash + "</a>");
+    log("setBaseURI terkirim, tx: " + hash + ".");
+  } catch(e){ setText("baseStatus", "Gagal: " + (e && e.message ? e.message : e)); log("Gagal setBaseURI: " + (e && e.message ? e.message : e)); }
+};
+$("copyBase").onclick = function(){
+  try { needContract(); const data = "0x" + SEL.setBaseURI + encString($("inpBaseURI").value); navigator.clipboard.writeText(data).then(function(){ setText("baseStatus", "Data setBaseURI disalin."); log("Data setBaseURI disalin."); }); }
+  catch(e){ setText("baseStatus", "Gagal: " + (e && e.message ? e.message : e)); log("Gagal salin data setBaseURI: " + (e && e.message ? e.message : e)); }
+};
+function sendMintOpen(val){
+  return (async function(){
+    try {
+      const c = needContract();
+      const data = "0x" + SEL.setMintOpen + encBool(val);
+      setText("openStatus", "Mengirim setMintOpen(" + val + ") — konfirmasi di wallet...");
+      log("Mengirim setMintOpen(" + val + ")...");
+      const hash = await sendTx(c, data, "0x0");
+      setHtml("openStatus", "Tx terkirim: <a target=\"_blank\" rel=\"noopener\" href=\"https://bscscan.com/tx/" + hash + "\">" + hash + "</a>");
+      log("setMintOpen(" + val + ") terkirim, tx: " + hash + ".");
+    } catch(e){ setText("openStatus", "Gagal: " + (e && e.message ? e.message : e)); log("Gagal setMintOpen: " + (e && e.message ? e.message : e)); }
+  })();
+}
+$("openMint").onclick = function(){ sendMintOpen(true); };
+$("closeMint").onclick = function(){ sendMintOpen(false); };
+$("copyOpen").onclick = function(){
+  try { needContract(); const data = "0x" + SEL.setMintOpen + encBool(true); navigator.clipboard.writeText(data).then(function(){ setText("openStatus", "Data setMintOpen(true) disalin."); log("Data setMintOpen(true) disalin."); }); }
+  catch(e){ setText("openStatus", "Gagal: " + (e && e.message ? e.message : e)); log("Gagal salin data: " + (e && e.message ? e.message : e)); }
+};
+$("copyClose").onclick = function(){
+  try { needContract(); const data = "0x" + SEL.setMintOpen + encBool(false); navigator.clipboard.writeText(data).then(function(){ setText("openStatus", "Data setMintOpen(false) disalin."); log("Data setMintOpen(false) disalin."); }); }
+  catch(e){ setText("openStatus", "Gagal: " + (e && e.message ? e.message : e)); log("Gagal salin data: " + (e && e.message ? e.message : e)); }
+};
+async function callView(c, sel){
+  const r = await provider.request({method:"eth_call", params:[{to:c, data:"0x"+sel}, "latest"]});
+  return r;
+}
+function decAddress(hex){
+  hex = hex.replace(/^0x/, "");
+  return "0x" + hex.slice(-40);
+}
+function decUint(hex){ return BigInt(hex).toString(); }
+function decBool(hex){ return BigInt(hex) !== 0n ? "true" : "false"; }
+function decString(hex){
+  hex = hex.replace(/^0x/, "");
+  const len = parseInt(hex.slice(64, 128), 16);
+  const data = hex.slice(128, 128 + len * 2);
+  const bytes = new Uint8Array(data.match(/.{2}/g).map(function(h){ return parseInt(h, 16); }));
+  return new TextDecoder().decode(bytes);
+}
+function fmtBnb(weiStr){
+  try {
+    const w = BigInt(weiStr); const E = 1000000000000000000n;
+    const whole = w / E; const frac = w % E;
+    let f = frac.toString().padStart(18, "0").replace(/0+$/, "");
+    return (f ? whole.toString() + "." + f : whole.toString()) + " BNB";
+  } catch(e){ return weiStr; }
+}
+$("check").onclick = async function(){
+  try {
+    const c = needContract();
+    if (!provider) throw new Error("Connect wallet dulu (Langkah 1).");
+    setText("checkStatus", "Membaca kontrak...");
+    log("Cek status kontrak " + c + "...");
+    const owner = decAddress(await callView(c, SEL.owner));
+    const mintOpen = decBool(await callView(c, SEL.mintOpen));
+    const total = decUint(await callView(c, SEL.totalSupply));
+    const freeRem = decUint(await callView(c, SEL.freeRemaining));
+    const paidRem = decUint(await callView(c, SEL.paidRemaining));
+    const fee = decUint(await callView(c, SEL.FREE_MINT_FEE));
+    const price = decUint(await callView(c, SEL.PAID_MINT_PRICE));
+    const treasury = decAddress(await callView(c, SEL.treasury));
+    const base = decString(await callView(c, SEL.baseURI));
+    ownerKnown = owner;
+    const rows = [
+      ["owner", owner], ["mintOpen", mintOpen], ["totalSupply", total + " / 10000"],
+      ["freeRemaining", freeRem + " / 5000"], ["paidRemaining", paidRem + " / 5000"],
+      ["FREE_MINT_FEE", fee + " wei (" + fmtBnb(fee) + ")"],
+      ["PAID_MINT_PRICE", price + " wei (" + fmtBnb(price) + ")"],
+      ["treasury", treasury], ["baseURI", base === "" ? "(kosong)" : base]
+    ];
+    setHtml("checkRows", rows.map(function(r){ return "<tr><td><b>" + r[0] + "</b></td><td>" + r[1] + "</td></tr>"; }).join(""));
+    if (account && account.toLowerCase() !== owner.toLowerCase()) {
+      setText("checkWarn", "PERINGATAN: wallet yang terhubung BUKAN owner. Langkah 5, 6, dan 7 hanya bisa dijalankan owner — transaksi dari wallet ini akan revert.");
+    } else if (account) {
+      setText("checkWarn", "Wallet terhubung adalah owner. Langkah 5, 6, dan 7 bisa dijalankan dari wallet ini.");
+    } else setText("checkWarn", "");
+    setText("checkStatus", "Cek selesai. Nilai yang diharapkan: FREE_MINT_FEE 0.0001 BNB, PAID_MINT_PRICE 0.001 BNB, mintOpen true setelah Langkah 6.");
+    log("Cek selesai: totalSupply " + total + ", freeRemaining " + freeRem + ", paidRemaining " + paidRem + ", mintOpen " + mintOpen + ".");
+  } catch(e){ setText("checkStatus", "Gagal cek: " + (e && e.message ? e.message : e)); log("Gagal cek: " + (e && e.message ? e.message : e)); }
+};
+$("refreshCounters").onclick = async function(){
+  try {
+    const c = needContract();
+    if (!provider) throw new Error("Connect wallet dulu (Langkah 1).");
+    setText("counterStatus", "Membaca counter...");
+    const mintOpen = decBool(await callView(c, SEL.mintOpen));
+    const total = decUint(await callView(c, SEL.totalSupply));
+    const freeRem = decUint(await callView(c, SEL.freeRemaining));
+    const paidRem = decUint(await callView(c, SEL.paidRemaining));
+    const rows = [
+      ["mintOpen", mintOpen], ["totalSupply", total + " / 10000"],
+      ["freeRemaining", freeRem + " / 5000"], ["paidRemaining", paidRem + " / 5000"],
+      ["freeTerjual", (5000 - parseInt(freeRem, 10)) + " / 5000"], ["paidTerjual", (5000 - parseInt(paidRem, 10)) + " / 5000"]
+    ];
+    setHtml("counterRows", rows.map(function(r){ return "<tr><td><b>" + r[0] + "</b></td><td>" + r[1] + "</td></tr>"; }).join(""));
+    setText("counterStatus", "Counter diperbarui.");
+    log("Counter diperbarui: totalSupply " + total + ", freeRemaining " + freeRem + ", paidRemaining " + paidRem + ".");
+  } catch(e){ setText("counterStatus", "Gagal: " + (e && e.message ? e.message : e)); log("Gagal perbarui counter: " + (e && e.message ? e.message : e)); }
+};
+$("refreshBal").onclick = async function(){
+  try {
+    const c = needContract();
+    if (!provider) throw new Error("Connect wallet dulu (Langkah 1).");
+    const bal = await provider.request({method:"eth_getBalance", params:[c, "latest"]});
+    const balStr = decUint(bal);
+    setText("balValue", "Saldo kontrak: " + balStr + " wei (" + fmtBnb(balStr) + "). Normalnya 0 karena fee langsung ke treasury.");
+    log("Saldo kontrak: " + balStr + " wei.");
+  } catch(e){ setText("balValue", "Gagal baca saldo: " + (e && e.message ? e.message : e)); log("Gagal baca saldo: " + (e && e.message ? e.message : e)); }
+};
+$("withdrawBtn").onclick = async function(){
+  try {
+    const c = needContract();
+    const data = "0x" + SEL.withdraw;
+    setText("withdrawStatus", "Mengirim withdraw() — konfirmasi di wallet...");
+    log("Mengirim withdraw()...");
+    const hash = await sendTx(c, data, "0x0");
+    setHtml("withdrawStatus", "Tx terkirim: <a target=\"_blank\" rel=\"noopener\" href=\"https://bscscan.com/tx/" + hash + "\">" + hash + "</a>");
+    log("withdraw() terkirim, tx: " + hash + ".");
+  } catch(e){ setText("withdrawStatus", "Gagal: " + (e && e.message ? e.message : e)); log("Gagal withdraw: " + (e && e.message ? e.message : e)); }
+};
+$("copyWithdraw").onclick = function(){
+  try { needContract(); const data = "0x" + SEL.withdraw; navigator.clipboard.writeText(data).then(function(){ setText("withdrawStatus", "Data withdraw disalin."); log("Data withdraw disalin."); }); }
+  catch(e){ setText("withdrawStatus", "Gagal: " + (e && e.message ? e.message : e)); log("Gagal salin data withdraw: " + (e && e.message ? e.message : e)); }
+};
+$("copyLog").onclick = function(){ navigator.clipboard.writeText($("logPanel").textContent).then(function(){ log("Log disalin."); }); };
+$("clearLog").onclick = function(){ $("logPanel").textContent = ""; };
+</script>
+</body></html>
