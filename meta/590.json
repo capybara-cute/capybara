@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Classic"
+      "value": "Dark"
     },
     {
       "trait_type": "Theme",
-      "value": "Purple Night"
+      "value": "Night Pool"
     },
     {
       "trait_type": "Accessory",
-      "value": "None"
+      "value": "Golden Crown"
     },
     {
       "trait_type": "Pose",
-      "value": "Standing"
+      "value": "Soaking"
     }
   ]
 }

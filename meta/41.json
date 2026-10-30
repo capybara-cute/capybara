@@ -5,7 +5,7 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Moss"
+      "value": "Gold"
     },
     {
       "trait_type": "Theme",
@@ -13,11 +13,11 @@
     },
     {
       "trait_type": "Accessory",
-      "value": "Bandana"
+      "value": "Orange on Head"
     },
     {
       "trait_type": "Pose",
-      "value": "Soaking"
+      "value": "Standing"
     }
   ]
 }

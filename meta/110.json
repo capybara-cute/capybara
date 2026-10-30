@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Moss"
+      "value": "Cream"
     },
     {
       "trait_type": "Theme",
-      "value": "Pool Day"
+      "value": "Forest"
     },
     {
       "trait_type": "Accessory",
-      "value": "Sakura"
+      "value": "Sunglasses"
     },
     {
       "trait_type": "Pose",
-      "value": "Soaking"
+      "value": "Standing"
     }
   ]
 }

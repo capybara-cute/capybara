@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Classic"
+      "value": "Dark"
     },
     {
       "trait_type": "Theme",
-      "value": "Sunset"
+      "value": "Night Pool"
     },
     {
       "trait_type": "Accessory",
-      "value": "Sakura"
+      "value": "Golden Star"
     },
     {
       "trait_type": "Pose",
-      "value": "Soaking"
+      "value": "Standing"
     }
   ]
 }

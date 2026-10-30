@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Rust"
+      "value": "Moss"
     },
     {
       "trait_type": "Theme",
-      "value": "Night Pool"
+      "value": "Oasis"
     },
     {
       "trait_type": "Accessory",
-      "value": "Orange"
+      "value": "Bandana"
     },
     {
       "trait_type": "Pose",
-      "value": "Standing"
+      "value": "Soaking"
     }
   ]
 }

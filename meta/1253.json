@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Moss"
+      "value": "Dark"
     },
     {
       "trait_type": "Theme",
-      "value": "Sunset"
+      "value": "Forest"
     },
     {
       "trait_type": "Accessory",
-      "value": "Golden Crown"
+      "value": "Cherry Blossom"
     },
     {
       "trait_type": "Pose",
-      "value": "Standing"
+      "value": "Soaking"
     }
   ]
 }

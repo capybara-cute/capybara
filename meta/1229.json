@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Classic"
+      "value": "Moss"
     },
     {
       "trait_type": "Theme",
-      "value": "Pool Day"
+      "value": "Night Pool"
     },
     {
       "trait_type": "Accessory",
-      "value": "Bandana"
+      "value": "Golden Star"
     },
     {
       "trait_type": "Pose",
-      "value": "Soaking"
+      "value": "Standing"
     }
   ]
 }

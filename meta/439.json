@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Gold"
+      "value": "Classic"
     },
     {
       "trait_type": "Theme",
-      "value": "Night Pool"
+      "value": "Sunset"
     },
     {
       "trait_type": "Accessory",
-      "value": "None"
+      "value": "Sunglasses"
     },
     {
       "trait_type": "Pose",
-      "value": "Standing"
+      "value": "Soaking"
     }
   ]
 }

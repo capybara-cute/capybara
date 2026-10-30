@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Rust"
+      "value": "Classic"
     },
     {
       "trait_type": "Theme",
-      "value": "Night Pool"
+      "value": "Purple Night"
     },
     {
       "trait_type": "Accessory",
-      "value": "None"
+      "value": "Bandana"
     },
     {
       "trait_type": "Pose",
-      "value": "Soaking"
+      "value": "Standing"
     }
   ]
 }

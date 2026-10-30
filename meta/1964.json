@@ -5,7 +5,7 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Gold"
+      "value": "Rust"
     },
     {
       "trait_type": "Theme",
@@ -13,11 +13,11 @@
     },
     {
       "trait_type": "Accessory",
-      "value": "Leaf"
+      "value": "No Accessory"
     },
     {
       "trait_type": "Pose",
-      "value": "Soaking"
+      "value": "Standing"
     }
   ]
 }

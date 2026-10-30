@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Classic"
+      "value": "Moss"
     },
     {
       "trait_type": "Theme",
-      "value": "Pool Day"
+      "value": "Purple Night"
     },
     {
       "trait_type": "Accessory",
-      "value": "Orange"
+      "value": "Fresh Leaf"
     },
     {
       "trait_type": "Pose",
-      "value": "Standing"
+      "value": "Soaking"
     }
   ]
 }

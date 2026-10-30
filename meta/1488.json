@@ -5,15 +5,15 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Gold"
+      "value": "Classic"
     },
     {
       "trait_type": "Theme",
-      "value": "Oasis"
+      "value": "Stone Gray"
     },
     {
       "trait_type": "Accessory",
-      "value": "Gold Star"
+      "value": "No Accessory"
     },
     {
       "trait_type": "Pose",

@@ -5,19 +5,19 @@
   "attributes": [
     {
       "trait_type": "Fur",
-      "value": "Moss"
+      "value": "Classic"
     },
     {
       "trait_type": "Theme",
-      "value": "Forest"
+      "value": "Night Pool"
     },
     {
       "trait_type": "Accessory",
-      "value": "None"
+      "value": "No Accessory"
     },
     {
       "trait_type": "Pose",
-      "value": "Soaking"
+      "value": "Standing"
     }
   ]
 }
