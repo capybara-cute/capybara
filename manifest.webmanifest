@@ -1,0 +1,44 @@
+{
+  "background_color": "#0b0806",
+  "categories": [
+    "entertainment",
+    "finance"
+  ],
+  "description": "10,000 chill pixel capybaras soaking in a night pool on BNB Chain. First 5,000 free mint, remaining 5,000 paid mint.",
+  "dir": "ltr",
+  "display": "standalone",
+  "icons": [
+    {
+      "purpose": "any",
+      "sizes": "192x192",
+      "src": "icon-192.png",
+      "type": "image/png"
+    },
+    {
+      "purpose": "any",
+      "sizes": "512x512",
+      "src": "icon-512.png",
+      "type": "image/png"
+    },
+    {
+      "purpose": "maskable",
+      "sizes": "192x192",
+      "src": "icon-maskable-192.png",
+      "type": "image/png"
+    },
+    {
+      "purpose": "maskable",
+      "sizes": "512x512",
+      "src": "icon-maskable-512.png",
+      "type": "image/png"
+    }
+  ],
+  "id": "../index.html",
+  "lang": "en",
+  "name": "Cappybara — 10,000 Pixel NFT",
+  "orientation": "portrait",
+  "scope": "../",
+  "short_name": "Cappybara",
+  "start_url": "../index.html",
+  "theme_color": "#0b0806"
+}
