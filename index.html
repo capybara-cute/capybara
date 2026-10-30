@@ -255,6 +255,18 @@
       .agent-note{color:var(--muted);font-size:14.5px;margin-top:18px;max-width:46em}
       .agent-note code{font-family:"JetBrains Mono",monospace;color:var(--amber);font-size:13px}
 
+      /* ---------- Paste wallet ---------- */
+      .paste-bar{background:var(--panel);border:3px solid var(--line);box-shadow:5px 5px 0 var(--shadow);padding:16px 18px;margin-bottom:20px}
+      .paste-bar label{display:block;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:2px;color:var(--teal);margin-bottom:10px}
+      .paste-bar input{
+        width:100%;background:var(--bg);border:3px solid var(--line2);color:var(--ink);
+        font-family:"JetBrains Mono",monospace;font-size:14px;padding:11px 12px;outline:none;
+      }
+      .paste-bar input:focus{border-color:var(--amber)}
+      .paste-status{font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.6;word-break:break-word}
+      .paste-status.ok{color:var(--green)}
+      .paste-status.err{color:var(--red)}
+
       /* ---------- FAQ ---------- */
       .faq{display:grid;grid-template-columns:1fr 1fr;gap:16px}
       .qa{background:var(--panel);border:3px solid var(--line);padding:18px;box-shadow:5px 5px 0 var(--shadow)}
@@ -369,12 +381,13 @@
           <div class="sec-head">
             <div class="sec-kicker">MINT</div>
             <h2>Choose Your Mint Phase</h2>
-            <p>Connect your wallet first, then pick a phase. The 0.0001 BNB free mint fee goes to the owner's wallet. Paid mint costs 0.001 BNB per NFT.</p>
+            <p>Connect your wallet first, then pick a phase. The 0.0001 BNB free mint fee goes to the owner's wallet. Paid mint costs 0.001 BNB per NFT. Minting also works with a <b style="color:var(--ink)">Binance Agent ID</b> wallet — after you connect, this page checks your wallet and shows whether an Agent ID is detected.</p>
           </div>
 
           <div class="wallet-bar">
             <span class="dot" id="walletDot"></span>
             <span class="wtext" id="walletText">Wallet not connected — click <b>Connect Wallet</b> to get started.</span>
+            <span class="wtext" id="agentIdText"></span>
             <span class="spacer"></span>
             <span class="wtext">Network: <b>BNB Chain</b></span>
           </div>
@@ -432,7 +445,7 @@
           <div class="status" id="mintStatus" role="status" aria-live="polite"></div>
 
           <div class="steps">
-            <div class="step"><b>STEP 1</b><p>Click Connect Wallet and approve the connection in your wallet (OKX, MetaMask, or any other EVM wallet) on the BNB Chain network.</p></div>
+            <div class="step"><b>STEP 1</b><p>Click Connect Wallet and approve the connection in your wallet (OKX, MetaMask, or any other EVM wallet) on the BNB Chain network. A wallet holding a Binance Agent ID works too — the page detects it after you connect.</p></div>
             <div class="step"><b>STEP 2</b><p>Pick a phase: Free Mint (0.0001 BNB fee) or Paid Mint (0.001 BNB per NFT), then set the mint amount.</p></div>
             <div class="step"><b>STEP 3</b><p>Click the mint button and confirm the transaction in your wallet. Your Cappybara is recorded under your wallet right away.</p></div>
           </div>
@@ -445,7 +458,13 @@
           <div class="sec-head">
             <div class="sec-kicker">MINT VIA AI AGENT</div>
             <h2>Let an AI Agent Mint for You</h2>
-            <p>Don't want to connect a wallet manually? Copy a prompt below and send it to your AI agent with access to a BNB Chain wallet. There's one prompt for free mint and one for paid mint.</p>
+            <p>Don't want to connect a wallet manually? Just paste your wallet address below — both prompts fill in automatically — then copy a prompt and send it to your AI agent. There's one prompt for free mint and one for paid mint. Wallets holding a Binance Agent ID work too.</p>
+          </div>
+
+          <div class="paste-bar">
+            <label for="walletInput">YOUR WALLET ADDRESS — PASTE IT HERE</label>
+            <input id="walletInput" type="text" autocomplete="off" spellcheck="false" placeholder="0x… paste your BNB Chain wallet address" />
+            <div class="paste-status" id="walletInputStatus">Paste your wallet address and both prompts below fill in automatically — then just hit COPY PROMPT. A wallet holding a Binance Agent ID works too. Connecting your wallet in the Mint section above also fills this in.</div>
           </div>
 
           <div class="prompt-grid">
@@ -460,6 +479,8 @@
 Mint details:
 - Collection name: Cappybara (total supply 10,000)
 - Network: BNB Chain (Chain ID 56)
+- My wallet address: [PASTE YOUR WALLET ADDRESS]
+- Binance Agent ID: if my wallet holds a Binance Agent ID, mint from that wallet — Binance Agent ID wallets are accepted for this mint, the same as regular wallets
 - Cappybara contract address: [PASTE CAPPYBARA CONTRACT ADDRESS]
 - Phase: Free Mint — tokens #1 to #5,000
 - Amount: 1 NFT
@@ -487,6 +508,8 @@ Important rule: never send more than 0.0001 BNB. If the free mint phase is sold 
 Mint details:
 - Collection name: Cappybara (total supply 10,000)
 - Network: BNB Chain (Chain ID 56)
+- My wallet address: [PASTE YOUR WALLET ADDRESS]
+- Binance Agent ID: if my wallet holds a Binance Agent ID, mint from that wallet — Binance Agent ID wallets are accepted for this mint, the same as regular wallets
 - Cappybara contract address: [PASTE CAPPYBARA CONTRACT ADDRESS]
 - Phase: Paid Mint — tokens #5,001 to #10,000
 - Amount: 1 NFT
@@ -504,7 +527,7 @@ Important rule: never send more than the set price (0.001 BNB per NFT). If the p
           </div>
 
           <p class="agent-note">
-            Replace <code>[PASTE CAPPYBARA CONTRACT ADDRESS]</code> with the official Cappybara contract address before sending the prompt to your agent.
+            Your wallet address is filled in automatically when you paste it above (or connect your wallet). Replace <code>[PASTE CAPPYBARA CONTRACT ADDRESS]</code> with the official Cappybara contract address before sending the prompt to your agent.
             You can also change the mint amount inside the prompt — for free mint the total fee is amount × 0.0001 BNB, and for paid mint the total price is amount × 0.001 BNB.
           </p>
         </div>
@@ -532,7 +555,11 @@ Important rule: never send more than the set price (0.001 BNB per NFT). If the p
             </div>
             <div class="qa">
               <h3>Can I mint without connecting a wallet manually?</h3>
-              <p>Yes. Copy an <b>AI agent prompt</b> above — there's one for free mint and one for paid mint — and send it to your AI agent with access to a BNB Chain wallet.</p>
+              <p>Yes. Paste your wallet address in the <b>AI Agent</b> section — both prompts fill in automatically — then copy a prompt and send it to your AI agent with access to a BNB Chain wallet.</p>
+            </div>
+            <div class="qa">
+              <h3>Can I mint with a Binance Agent ID?</h3>
+              <p>Yes. If your wallet holds a <b>Binance Agent ID</b>, you can mint with that wallet just like a regular wallet. After you connect, the wallet bar shows whether an Agent ID is detected, and the agent prompts above also cover agent wallets.</p>
             </div>
           </div>
         </div>
@@ -923,6 +950,9 @@ Important rule: never send more than the set price (0.001 BNB per NFT). If the p
         document.getElementById("walletDot").classList.add("on");
         document.getElementById("walletText").innerHTML =
           "Wallet connected: <b>" + shortAddr(addr) + "</b> — ready to mint on BNB Chain.";
+        checkAgentId(addr);
+        var wi = document.getElementById("walletInput");
+        if (wi && wi.value.trim() !== addr) { wi.value = addr; onWalletInput(); }
       }
 
       function connectWallet() {
@@ -1003,10 +1033,73 @@ Important rule: never send more than the set price (0.001 BNB per NFT). If the p
               btn.classList.remove("connected");
               document.getElementById("walletDot").classList.remove("on");
               document.getElementById("walletText").innerHTML = "Wallet not connected — click <b>Connect Wallet</b> to get started.";
+              document.getElementById("agentIdText").textContent = "";
             }
           });
         }
       })();
+
+      /* ================= BINANCE AGENT ID CHECK =================
+         Display-only detection: after connecting, read balanceOf on the
+         Binance Agent ID registry. Agent wallets and regular wallets can
+         both mint — this only reports what the wallet holds. */
+      var AGENT_ID_REGISTRY = "0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F";
+      function checkAgentId(addr) {
+        var el = document.getElementById("agentIdText");
+        if (!el) return;
+        var p = getProvider();
+        if (!p) { el.textContent = ""; return; }
+        el.textContent = "Checking Binance Agent ID…";
+        var data = "0x70a08231" + "000000000000000000000000" + addr.replace(/^0x/i, "").toLowerCase();
+        p.request({ method: "eth_call", params: [{ to: AGENT_ID_REGISTRY, data: data }, "latest"] })
+          .then(function (res) {
+            var n = 0;
+            try { n = res && res !== "0x" ? Number(BigInt(res)) : 0; }
+            catch (e) { n = parseInt(res, 16) || 0; }
+            if (n > 0) {
+              el.innerHTML = "Binance Agent ID: <b>detected (" + n + " held)</b> — this wallet can mint as an agent wallet.";
+            } else {
+              el.innerHTML = "Binance Agent ID: <b>none on this wallet</b> — regular wallet mint still works.";
+            }
+          })
+          .catch(function () { el.textContent = ""; });
+      }
+
+      /* ================= PASTE WALLET → PROMPTS FILL IN ================= */
+      var WALLET_PLACEHOLDER = "[PASTE YOUR WALLET ADDRESS]";
+      var promptEls = {
+        free: document.getElementById("promptFree"),
+        paid: document.getElementById("promptPaid")
+      };
+      var promptTemplates = {
+        free: promptEls.free.textContent,
+        paid: promptEls.paid.textContent
+      };
+      function isValidAddr(a) { return /^0x[0-9a-fA-F]{40}$/.test(a); }
+      function renderPrompts() {
+        var input = document.getElementById("walletInput");
+        var addr = input.value.trim();
+        var val = isValidAddr(addr) ? addr : WALLET_PLACEHOLDER;
+        promptEls.free.textContent = promptTemplates.free.split(WALLET_PLACEHOLDER).join(val);
+        promptEls.paid.textContent = promptTemplates.paid.split(WALLET_PLACEHOLDER).join(val);
+      }
+      function onWalletInput() {
+        var input = document.getElementById("walletInput");
+        var st = document.getElementById("walletInputStatus");
+        var addr = input.value.trim();
+        if (!addr) {
+          st.textContent = "Paste your wallet address and both prompts below fill in automatically — then just hit COPY PROMPT. A wallet holding a Binance Agent ID works too. Connecting your wallet in the Mint section above also fills this in.";
+          st.className = "paste-status";
+        } else if (isValidAddr(addr)) {
+          st.textContent = "Wallet address inserted into both prompts: " + shortAddr(addr) + " — now just copy the Free Mint or Paid Mint prompt below.";
+          st.className = "paste-status ok";
+        } else {
+          st.textContent = "That doesn't look like a complete wallet address yet — it should start with 0x and be 42 characters long.";
+          st.className = "paste-status err";
+        }
+        renderPrompts();
+      }
+      document.getElementById("walletInput").addEventListener("input", onWalletInput);
 
       /* ================= COPY PROMPT ================= */
       document.querySelectorAll("[data-copy]").forEach(function (btn) {
