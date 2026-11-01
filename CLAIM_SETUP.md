@@ -1,46 +1,45 @@
-# CAPPY NFT claim — deployment and activation
+# CAPPY NFT claim registry — deployment and operation
 
 ## Rules implemented
 
-- Every NFT ID in the verified mint snapshot earns **10,000 CAPPY** (18 decimals).
-- A claim is restricted to the wallet that received the NFT in its original mint `Transfer(address(0), minter, tokenId)` event. Later owners cannot claim that NFT's allocation.
-- Each NFT can be claimed once. One transaction claims one NFT.
-- Each successful claim requires exactly **0.0003 BNB**, sent to the project treasury `0xea92a9df3ad64b2de2e84ccb2cf96b216b06c9bb` embedded at deployment. If the claim fails, the whole transaction—including the fee transfer—reverts.
-- If all 10,000 NFTs are minted and claimed, the total allocation is 100,000,000 CAPPY. Since the fixed-supply token has no mint function, unminted/unclaimed NFT allocations remain unused; this contract has no owner withdrawal function.
+- Each registered NFT ID receives **10,000 CAPPY** (18 decimals), whether it was free-minted or paid-minted.
+- Only the wallet that received the NFT in the original mint `Transfer(address(0), minter, tokenId)` event can claim. A later NFT owner cannot claim that NFT's allocation.
+- One NFT is claimed per transaction, once. The fixed fee is **0.0003 BNB per NFT**, sent to treasury `0xea92a9df3ad64b2de2e84ccb2cf96b216b06c9bb`. If a claim fails, the entire transaction, including the fee transfer, reverts.
+- The registry contract supports up to 10,000 IDs. At 10,000 registrations, the full 100,000,000 CAPPY supply is allocated. It has no owner withdrawal function.
 
-## Important: not live yet
+## Important limitation of the existing NFT contract
 
-`claim.html` is deliberately fail-closed: `CLAIM_CONTRACT` is blank and no snapshot JSON is included. Do not link it as an active claim page until the mint snapshot is audited, the contract is deployed, and the distributor is funded. No on-chain transaction has been performed by this repository change.
+The NFT contract is already deployed and cannot be modified to call a new claim contract during mint. Therefore, the registry cannot automatically know a minter. The project registry owner must read the original mint event and register each NFT's first recipient on-chain. This works for both existing and future mints, but future claims become available only after the admin registers them. Registration is an explicit trust in the project admin; audit every address and token ID before submitting a registration transaction.
 
-## Build the original-minter snapshot
+The public page `claim.html` uses the user's connected BNB Chain wallet and an NFT token ID to read the registry. It is deliberately fail-closed until its `CLAIM_CONTRACT` address is set. No on-chain transaction has been performed by the repository changes.
 
-1. Confirm the NFT deployment block and choose a stable BNB Chain RPC.
-2. In a Python environment with PyCryptodome (`python3 -m pip install pycryptodome`), run:
+## Build registry batches
+
+1. Find the NFT contract deployment block for `0xba33f7ff4134af69af19ecdf141221666b577c32`.
+2. In Python, run:
 
    ```sh
-   python3 scripts/build_claim_snapshot.py --start-block <NFT_DEPLOYMENT_BLOCK> --rpc <BNB_RPC_URL> --out claim-snapshot.json
+   python3 scripts/build_minter_registry.py --start-block <NFT_DEPLOYMENT_BLOCK> --rpc https://bsc-dataseed.binance.org/ --out minter-registry.json
    ```
 
-3. Independently audit all mint events, the number of distinct token IDs, and representative minter addresses against BscScan or a second RPC. Do not deploy the root until this check passes. The script fails if it finds duplicate IDs or more than 10,000 mint events.
-4. Preserve the generated JSON and published Merkle root as the canonical snapshot. The root is immutable once the claim contract is deployed.
+3. Audit the `records` and each batch's `tokenIds` / `originalMinters` against the NFT mint `Transfer` events in BscScan and preferably a second RPC. The `originalMinters` must be the `to` address in the mint event where `from` is the zero address—not current NFT owners.
+4. Submit each audited batch with the registry contract owner's wallet by calling `registerMinters(uint256[] tokenIds,address[] originalMinters)`. Keep batches at or below 100 IDs, as the script outputs. Verify `originalMinterOf(tokenId)` on-chain after registration.
+5. For future mints, rerun the script beginning at **last scanned end block + 1**, audit only the new records, and register them. Do not include already-registered IDs; the contract rejects duplicates. Keep the last completed scan block and registration transaction hashes in project records.
 
 ## Deploy and fund
 
-On BNB Smart Chain (chain ID 56), deploy `contracts/CappyNftClaim.sol` with Solidity 0.8.20 or later. Constructor arguments, in order:
+On BNB Smart Chain (chain ID 56), deploy `contracts/CappyNftClaim.sol` with Solidity 0.8.20 or later. Constructor arguments:
 
 1. CAPPY token: `0x1129d5541475ab514dd3127654a9ff72c08645db`
 2. NFT contract: `0xba33f7ff4134af69af19ecdf141221666b577c32`
 3. Treasury: `0xea92a9df3ad64b2de2e84ccb2cf96b216b06c9bb`
-4. `merkleRoot` from the verified snapshot JSON
-5. Reward per NFT in base units: `10000000000000000000000` (10,000 × 10^18)
 
-The deployer must then transfer enough CAPPY to the claim contract. Funding it with **100,000,000 CAPPY** covers the full 10,000-NFT allocation. Check the claim contract balance and verify `merkleRoot`, `rewardPerNft`, `token`, `nft`, and `treasury` on-chain before opening claims. Contract deployment and token funding require the owner's own wallet approvals; they are not performed by the website code.
+The deploying wallet becomes registry owner. Register and audit all existing NFT minters, then transfer enough CAPPY to the registry contract. Funding it with **100,000,000 CAPPY** covers all 10,000 possible NFTs. Verify the deployed token/NFT/treasury addresses, owner, registration count, and CAPPY balance before opening claims. Deployment, registration, ownership transfer, and funding all require the project owner's own wallet approvals.
 
 ## Activate the website
 
-1. Put the audited `claim-snapshot.json` beside `claim.html` in the hosted site.
-2. Set `CLAIM_CONTRACT` near the top of the inline script in `claim.html` to the verified deployed address.
-3. Test with a test wallet/minter and verify: wrong wallet rejected, wrong proof rejected, duplicate claim rejected, exactly 0.0003 BNB reaches the treasury, and exactly 10,000 CAPPY reaches the original minter.
-4. The main site's `index.html` now links to `claim.html` with a clear coming-soon status. After these checks, configure the deployed contract and audited snapshot, then change the CTA/status from coming-soon to open and publish the snapshot.
+1. Set `CLAIM_CONTRACT` in `claim.html` to the verified deployed registry address.
+2. Test on BNB Chain with a registered minter: correct minter passes; unregistered ID and wrong wallet fail; a duplicate claim fails; exactly 0.0003 BNB reaches treasury; exactly 10,000 CAPPY reaches the original minter.
+3. Only after those checks, change the coming-soon label/status on `index.html` to indicate claims are open and publish.
 
-The site asks users to approve transactions in their own wallet; it never requests a seed phrase or private key.
+The site asks minters to approve transactions in their own wallet. It never requests a seed phrase or private key.
