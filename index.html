@@ -619,6 +619,24 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
             <p class="status" id="marketCheckStatus" data-i18n="marketCheckIdle">Enter a token ID (1–10,000) and check ownership, or open the collection on Element.</p>
             <p class="agent-note" data-i18n="marketListNote">Listing on Element: on the token&apos;s Element page click Sell, set your price and duration, then Start Listing and confirm in your wallet. Your NFT stays in your wallet until a buyer buys it. Live Element listings are shown on Element itself, not pulled into this static page.</p>
           </div>
+          <div class="market-board" style="margin-top:24px">
+            <b data-i18n="boardH">For Sale Board — Post Your Cappybara</b>
+            <p data-i18n="boardP">This is a manual board. First list your Cappybara on Element, then post it here so visitors to capyybara.fun can see it for sale. The trade itself still happens on Element — this board is only an announcement, it does not move the NFT or take payment.</p>
+            <div id="marketBoard" style="margin-top:12px"></div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+              <label style="flex:1;min-width:140px"><span data-i18n="boardFormToken">Token ID</span><br><input id="boardTokenId" type="number" min="1" max="10000" step="1" placeholder="e.g. 106" style="width:100%;margin-top:6px"></label>
+              <label style="flex:1;min-width:140px"><span data-i18n="boardFormPrice">Price (BNB)</span><br><input id="boardPrice" type="number" min="0" step="0.000001" placeholder="e.g. 0.000742" style="width:100%;margin-top:6px"></label>
+              <label style="flex:1;min-width:180px"><span data-i18n="boardFormSeller">Seller wallet (0x…)</span><br><input id="boardSeller" type="text" placeholder="0x… (or connect your wallet)" style="width:100%;margin-top:6px"></label>
+              <label style="flex:1;min-width:140px"><span data-i18n="boardFormContact">X handle (optional)</span><br><input id="boardContact" type="text" placeholder="@yourhandle" style="width:100%;margin-top:6px"></label>
+            </div>
+            <div class="cta-row" style="margin-top:12px">
+              <button class="btn green" id="boardPostBtn" type="button" data-i18n="boardPostBtn">Post for sale</button>
+              <button class="btn ghost" id="boardCopyBtn" type="button" data-i18n="boardCopyBtn">Copy submission</button>
+            </div>
+            <p class="status" id="boardStatus" data-i18n="boardIdle">Fill in the token and price, then post. Your post is saved on this device and a submission text is prepared for the owner.</p>
+            <textarea id="boardSubmission" rows="5" readonly style="width:100%;margin-top:8px" placeholder="Your submission text will appear here after you post."></textarea>
+            <p class="agent-note" data-i18n="boardNote">How a post becomes public: this is a static website with no database, so a post you make here is visible on this device only until the owner verifies your Element listing and adds it to the public board. To request a public post, send the submission text above to @cappybara_fun on X. The owner checks that the token is really listed on Element and that the seller wallet owns it, then adds it. A board post alone is never a sale — always buy through the Element link.</p>
+          </div>
           <div class="cta-row" style="margin-top:24px">
             <a class="btn green" href="https://element.market/collections/cappybara" target="_blank" rel="noopener" data-i18n="marketBrowseBtn">Browse all listings on Element →</a>
             <a class="btn ghost" href="#faq" data-i18n="marketFaq">Read the FAQ first</a>
@@ -743,6 +761,20 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
           marketCheckFail: "Could not check ownership on BNB Chain right now — try again, or check the token on Element.",
           marketSellBtn: "List this Cappybara on Element →", marketBuyBtn: "Buy on Element →", marketBrowseBtn: "Browse all listings on Element →",
           marketListNote: "Listing on Element: on the token&apos;s Element page click Sell, set your price and duration, then Start Listing and confirm in your wallet. Your NFT stays in your wallet until a buyer buys it. Live Element listings are shown on Element itself, not pulled into this static page.",
+          boardH: "For Sale Board — Post Your Cappybara",
+          boardP: "This is a manual board. First list your Cappybara on Element, then post it here so visitors to capyybara.fun can see it for sale. The trade itself still happens on Element — this board is only an announcement, it does not move the NFT or take payment.",
+          boardEmpty: "No posts yet — be the first to post a Cappybara for sale.",
+          boardFormToken: "Token ID", boardFormPrice: "Price (BNB)", boardFormSeller: "Seller wallet (0x…)", boardFormContact: "X handle (optional)",
+          boardPostBtn: "Post for sale", boardCopyBtn: "Copy submission", boardCopied: "COPIED",
+          boardIdle: "Fill in the token and price, then post. Your post is saved on this device and a submission text is prepared for the owner.",
+          boardInvalid: "Enter a token ID from 1 to 10,000 and a price above 0 BNB.",
+          boardNeedSeller: "Enter your seller wallet (0x…) or connect your wallet first.",
+          boardBadWallet: "Seller wallet must look like 0x followed by 40 hex characters.",
+          boardPostedLocal: "Posted on this device. Copy the submission text and send it to @cappybara_fun to request a public board post.",
+          boardLocalBadge: "On this device only — not a public post yet",
+          boardPublicBadge: "Public board post",
+          boardNote: "How a post becomes public: this is a static website with no database, so a post you make here is visible on this device only until the owner verifies your Element listing and adds it to the public board. To request a public post, send the submission text above to @cappybara_fun on X. The owner checks that the token is really listed on Element and that the seller wallet owns it, then adds it. A board post alone is never a sale — always buy through the Element link.",
+          marketFaq: "Read the FAQ first",
           faq6q: "Can I sell my Cappybara?", faq6p: "Yes. Use the <a href='#market'>Marketplace</a> section above: check your token, then list it on Element, where the trade is settled. You set your own price in BNB; Element&apos;s BNB Chain fee is 2% and the royalty shown is 0%.",
           faqKicker: "FAQ", faqH2: "Frequently Asked Questions",
           faq1q: "What is the total Cappybara supply?",
@@ -850,6 +882,20 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
           marketCheckFail: "目前无法在 BNB 链上核对所有权——请重试，或在 Element 上查看该代币。",
           marketSellBtn: "在 Element 挂单出售这只水豚 →", marketBuyBtn: "在 Element 购买 →", marketBrowseBtn: "在 Element 浏览全部挂单 →",
           marketListNote: "在 Element 挂单：在代币的 Element 页面点击 Sell，设定价格和时长，然后点击 Start Listing 并在钱包里确认。在买家购买之前，NFT 一直留在你的钱包里。Element 的实时挂单显示在 Element 本身，不会拉取到这个静态页面。",
+          boardH: "出售看板——发布你的水豚",
+          boardP: "这是一个手动看板。请先在 Element 上挂单你的水豚，再在这里发布，这样 capyybara.fun 的访客就能看到它在售。交易本身仍在 Element 完成——这个看板只是公告，不会转移 NFT，也不会收款。",
+          boardEmpty: "暂无发布——成为第一个发布出售水豚的人吧。",
+          boardFormToken: "代币 ID", boardFormPrice: "价格（BNB）", boardFormSeller: "卖家钱包（0x…）", boardFormContact: "X 账号（可选）",
+          boardPostBtn: "发布出售", boardCopyBtn: "复制提交内容", boardCopied: "已复制",
+          boardIdle: "填写代币和价格后发布。你的发布会保存在本设备上，并会生成一份提交内容给站长。",
+          boardInvalid: "请输入 1 到 10,000 之间的代币 ID，以及大于 0 BNB 的价格。",
+          boardNeedSeller: "请输入你的卖家钱包（0x…）或先连接钱包。",
+          boardBadWallet: "卖家钱包应为 0x 后跟 40 位十六进制字符。",
+          boardPostedLocal: "已发布到本设备。请复制提交内容并发送给 @cappybara_fun，以申请公开看板发布。",
+          boardLocalBadge: "仅在本设备可见——尚未公开",
+          boardPublicBadge: "公开看板发布",
+          boardNote: "公开流程：这是一个静态网站，没有数据库，所以你在这里的发布仅在本设备可见，直到站长核实你的 Element 挂单并把它加入公开看板。如需申请公开，请把上面的提交内容发送给 X 上的 @cappybara_fun。站长会核实该代币确实在 Element 挂单且卖家钱包确实拥有它，然后再添加。看板发布本身绝不是一次交易——请务必通过 Element 链接购买。",
+          marketFaq: "先看常见问题",
           faq6q: "我可以出售我的水豚吗？", faq6p: "可以。使用上面的“交易市场”部分：核对你的代币，然后在 Element 上挂单，交易在那里结算。你自己设定 BNB 价格；Element 在 BNB 链上的费用为 2%，显示的版税为 0%。",
 faqKicker: "常见问题", faqH2: "常见问题解答",
           faq1q: "Cappybara 的总供应量是多少？",
@@ -1680,6 +1726,106 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
         updateMarketLinks();
       })();
 
+
+      /* ================= MARKET BOARD — manual posts =================
+         Static site, no database: MANUAL_POSTS below is the public
+         board, edited only by the owner after verifying the Element
+         listing + ownership. Visitor posts go to localStorage on
+         their own device + a copyable submission for the owner.
+         The board never moves an NFT or takes payment. */
+      var MANUAL_POSTS = [];
+      function boardEl(id) { return document.getElementById(id); }
+      function boardStatus(msg, kind) {
+        var el = boardEl("boardStatus");
+        if (el) { el.textContent = msg; el.className = "status show" + (kind ? " " + kind : ""); }
+      }
+      function loadLocalBoardPosts() {
+        try {
+          var v = JSON.parse(localStorage.getItem("capyMarketPosts") || "[]");
+          return Array.isArray(v) ? v : [];
+        } catch (e) { return []; }
+      }
+      function saveLocalBoardPosts(posts) {
+        try { localStorage.setItem("capyMarketPosts", JSON.stringify(posts)); } catch (e) {}
+      }
+      function boardCard(post, badge) {
+        var card = document.createElement("div");
+        card.className = "card";
+        card.style.marginTop = "12px";
+        var title = document.createElement("div");
+        title.className = "card-top";
+        var name = document.createElement("span");
+        name.className = "card-name";
+        name.textContent = "Cappybara #" + post.token;
+        var price = document.createElement("span");
+        price.className = "card-id";
+        price.textContent = post.price + " BNB";
+        title.appendChild(name); title.appendChild(price);
+        var traits = document.createElement("div");
+        traits.className = "traits";
+        traits.textContent = "Seller: " + post.seller + (post.contact ? " • " + post.contact : "");
+        var tag = document.createElement("span");
+        tag.className = "phase-tag";
+        tag.textContent = badge;
+        var link = document.createElement("a");
+        link.className = "btn ghost";
+        link.href = elementAssetUrl(post.token);
+        link.target = "_blank"; link.rel = "noopener";
+        link.textContent = t("marketBuyBtn");
+        card.appendChild(title); card.appendChild(traits); card.appendChild(tag); card.appendChild(link);
+        return card;
+      }
+      function renderMarketBoard() {
+        var el = boardEl("marketBoard");
+        if (!el) return;
+        el.innerHTML = "";
+        var local = loadLocalBoardPosts();
+        if (!MANUAL_POSTS.length && !local.length) {
+          var p = document.createElement("p");
+          p.textContent = t("boardEmpty");
+          el.appendChild(p);
+          return;
+        }
+        MANUAL_POSTS.forEach(function (post) { el.appendChild(boardCard(post, t("boardPublicBadge"))); });
+        local.forEach(function (post) { el.appendChild(boardCard(post, t("boardLocalBadge"))); });
+      }
+      function boardSubmissionText(post) {
+        return "CAPPYBARA FOR SALE — BOARD SUBMISSION\nToken: #" + post.token + "\nPrice: " + post.price + " BNB\nSeller: " + post.seller + "\nContact: " + (post.contact || "-") + "\nElement: " + elementAssetUrl(post.token) + "\nContract: " + CONTRACT_ADDRESS;
+      }
+      function boardPost() {
+        var tokenEl = boardEl("boardTokenId"), priceEl = boardEl("boardPrice"), sellerEl = boardEl("boardSeller"), contactEl = boardEl("boardContact");
+        var token = tokenEl ? parseInt(tokenEl.value, 10) : NaN;
+        var price = priceEl ? parseFloat(priceEl.value) : NaN;
+        if (!isFinite(token) || token < 1 || token > 10000 || !isFinite(price) || price <= 0) {
+          boardStatus(t("boardInvalid"), "err"); return;
+        }
+        var seller = sellerEl && sellerEl.value.trim() ? sellerEl.value.trim() : (account || "");
+        if (!seller) { boardStatus(t("boardNeedSeller"), "err"); return; }
+        if (!/^0x[0-9a-fA-F]{40}$/.test(seller)) { boardStatus(t("boardBadWallet"), "err"); return; }
+        var post = { token: token, price: price, seller: seller, contact: contactEl ? contactEl.value.trim() : "" };
+        var local = loadLocalBoardPosts();
+        local.unshift(post);
+        saveLocalBoardPosts(local);
+        var ta = boardEl("boardSubmission");
+        if (ta) ta.value = boardSubmissionText(post);
+        renderMarketBoard();
+        boardStatus(t("boardPostedLocal"), "ok");
+      }
+      function boardCopy() {
+        var ta = boardEl("boardSubmission");
+        if (!ta || !ta.value) return;
+        var done = function () { boardStatus(t("boardCopied"), "ok"); };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(ta.value).then(done).catch(function () { ta.select(); document.execCommand("copy"); done(); });
+        } else { ta.select(); document.execCommand("copy"); done(); }
+      }
+      (function initMarketBoard() {
+        var pb = boardEl("boardPostBtn"), cb = boardEl("boardCopyBtn");
+        if (pb) pb.addEventListener("click", boardPost);
+        if (cb) cb.addEventListener("click", boardCopy);
+        renderMarketBoard();
+      })();
+
       /* ================= LANGUAGE SWITCH (EN / 中文） ================= */
       function applyLang(l) {
         lang = l;
@@ -1713,6 +1859,7 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
         refreshQty();
         onWalletInput();
         renderLive();
+        if (typeof renderMarketBoard === "function") renderMarketBoard();
       }
       document.querySelectorAll("[data-lang]").forEach(function (b) {
         b.addEventListener("click", function () { applyLang(b.getAttribute("data-lang")); });
