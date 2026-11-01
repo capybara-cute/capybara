@@ -375,6 +375,7 @@
           <a href="#mint" data-i18n="navMint">Mint</a>
           <a href="#agent" data-i18n="navAgent">AI Agent</a>
           <a href="#faq" data-i18n="navFaq">FAQ</a>
+          <a href="#market" data-i18n="navMarket">Marketplace</a>
         </nav>
         <div class="lang-toggle" role="group" aria-label="Language / 语言">
           <button type="button" data-lang="en" class="active">EN</button>
@@ -580,6 +581,36 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
         </div>
       </section>
 
+      <!-- MARKETPLACE -->
+      <section id="market">
+        <div class="wrap">
+          <div class="sec-head">
+            <div class="sec-kicker" data-i18n="marketKicker">SECONDARY MARKET</div>
+            <h2 data-i18n="marketH2">Sell Your Cappybara</h2>
+            <p data-i18n="marketP">Already own a Cappybara? You can resell it on a secondary NFT marketplace on BNB Chain. Selling happens on the marketplace itself — capyybara.fun does not hold your NFT, does not set your price, and does not take a sale fee. Always check that the collection contract is exactly <span class="mono">0xba33f7ff4134af69af19ecdf141221666b577c32</span> before you list, so you do not list a fake collection.</p>
+          </div>
+          <div class="steps">
+            <div class="step">
+              <b data-i18n="marketStep1H">1. Open the marketplace</b>
+              <p data-i18n="marketStep1P">Open OpenSea on BNB Chain with the button below, or open any BNB NFT marketplace and search for the contract address above.</p>
+            </div>
+            <div class="step">
+              <b data-i18n="marketStep2H">2. Connect your wallet</b>
+              <p data-i18n="marketStep2P">Connect the same wallet that holds your Cappybara, on BNB Chain (chain ID 56). Your NFT stays in your wallet until a buyer buys it.</p>
+            </div>
+            <div class="step">
+              <b data-i18n="marketStep3H">3. List it for sale</b>
+              <p data-i18n="marketStep3P">Pick your Cappybara, set your price in BNB, approve the listing in your wallet, and confirm. The marketplace&apos;s own sale terms and fees apply — read them on the marketplace before you list.</p>
+            </div>
+          </div>
+          <div class="cta-row" style="margin-top:24px">
+            <a class="btn green" href="https://opensea.io/assets/bsc/0xba33f7ff4134af69af19ecdf141221666b577c32" target="_blank" rel="noopener" data-i18n="marketOpensea">Sell on OpenSea (BNB Chain) →</a>
+            <a class="btn ghost" href="#faq" data-i18n="marketFaq">Read the FAQ first</a>
+          </div>
+          <p class="agent-note" data-i18n="marketNote">Safety: a real marketplace only ever asks you to approve a listing in your own wallet. Never share your seed phrase or private key with anyone, including a marketplace, an agent, or a buyer.</p>
+        </div>
+      </section>
+
       <!-- FAQ -->
       <section id="faq">
         <div class="wrap">
@@ -608,6 +639,10 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
               <h3 data-i18n="faq5q">Can I mint with a Binance Agent ID?</h3>
               <p data-i18n="faq5p">Yes. If your wallet holds a <b>Binance Agent ID</b>, you can mint with it just like a regular wallet. After connecting, the wallet bar shows whether an Agent ID was detected, and the agent prompts above work for agent wallets too.</p>
             </div>
+          <div class="qa">
+            <h3 data-i18n="faq6q">Can I sell my Cappybara?</h3>
+            <p data-i18n="faq6p">Yes. Holders can resell on a secondary NFT marketplace on BNB Chain — see the <a href="#market">Marketplace</a> section above. Selling happens on the marketplace, not on capyybara.fun, and you set your own price in BNB.</p>
+          </div>
           </div>
         </div>
       </section>
@@ -628,7 +663,7 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
         en: {
           docTitle: "Cappybara — 10,000 Pixel NFT Supply",
           brandAria: "Cappybara — back to top",
-          navCollection: "Collection", navMint: "Mint", navAgent: "AI Agent", navFaq: "FAQ",
+          navCollection: "Collection", navMint: "Mint", navAgent: "AI Agent", navFaq: "FAQ", navMarket: "Marketplace",
           connect: "Connect Wallet",
           badge: "PIXEL NFT COLLECTION • 10,000 SUPPLY",
           heroLead: "10,000 chill pixel capybaras soaking in a night pool on BNB Chain. <strong>The first 5,000 mint for free</strong> — just pay a 0.0001 BNB fee. <strong>The remaining 5,000 are paid mints</strong> at 0.001 BNB per NFT. Mint with your own wallet, or let an AI agent do it for you.",
@@ -675,6 +710,14 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
           promptFreeH: "Prompt — Free Mint", promptPaidH: "Prompt — Paid Mint",
           copyBtn: "COPY PROMPT", copied: "COPIED",
           agentNote: "The contract and treasury addresses in both prompts are the deployed Cappybara contract (0xba33f7ff4134af69af19ecdf141221666b577c32) and its treasury (0xea92a9df3ad64b2de2e84ccb2cf96b216b06c9bb). The agent only prepares transactions through a wallet you control — never share your seed phrase or private key. The prompt amounts follow your mint card picks: free mint totals amount × 0.0001 BNB, paid mint amount × 0.001 BNB.",
+          marketKicker: "SECONDARY MARKET", marketH2: "Sell Your Cappybara",
+          marketP: "Already own a Cappybara? You can resell it on a secondary NFT marketplace on BNB Chain. Selling happens on the marketplace itself — capyybara.fun does not hold your NFT, does not set your price, and does not take a sale fee. Always check that the collection contract is exactly 0xba33f7ff4134af69af19ecdf141221666b577c32 before you list, so you do not list a fake collection.",
+          marketStep1H: "1. Open the marketplace", marketStep1P: "Open OpenSea on BNB Chain with the button below, or open any BNB NFT marketplace and search for the contract address above.",
+          marketStep2H: "2. Connect your wallet", marketStep2P: "Connect the same wallet that holds your Cappybara, on BNB Chain (chain ID 56). Your NFT stays in your wallet until a buyer buys it.",
+          marketStep3H: "3. List it for sale", marketStep3P: "Pick your Cappybara, set your price in BNB, approve the listing in your wallet, and confirm. The marketplace&apos;s own sale terms and fees apply — read them on the marketplace before you list.",
+          marketOpensea: "Sell on OpenSea (BNB Chain) →", marketFaq: "Read the FAQ first",
+          marketNote: "Safety: a real marketplace only ever asks you to approve a listing in your own wallet. Never share your seed phrase or private key with anyone, including a marketplace, an agent, or a buyer.",
+          faq6q: "Can I sell my Cappybara?", faq6p: "Yes. Holders can resell on a secondary NFT marketplace on BNB Chain — see the Marketplace section above. Selling happens on the marketplace, not on capyybara.fun, and you set your own price in BNB.",
           faqKicker: "FAQ", faqH2: "Frequently Asked Questions",
           faq1q: "What is the total Cappybara supply?",
           faq1p: "Total supply is <b>10,000 NFTs</b>, split into two phases: 5,000 free mints (tokens #1–#5,000) and 5,000 paid mints (tokens #5,001–#10,000).",
@@ -717,7 +760,7 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
         zh: {
           docTitle: "Cappybara — 10,000 只像素 NFT",
           brandAria: "Cappybara — 返回顶部",
-          navCollection: "系列", navMint: "铸造", navAgent: "AI 代理", navFaq: "常见问题",
+          navCollection: "系列", navMint: "铸造", navAgent: "AI 代理", navFaq: "常见问题", navMarket: "交易市场",
           connect: "连接钱包",
           badge: "像素 NFT 系列 • 总量 10,000",
           heroLead: "10,000 只悠闲的像素水豚，在 BNB 链上的夜晚池塘里泡澡。<strong>前 5,000 只免费铸造</strong>——只需支付 0.0001 BNB 费用。<strong>其余 5,000 只为付费铸造</strong>，每只 0.001 BNB。你可以用自己的钱包铸造，也可以让 AI 代理帮你完成。",
@@ -764,7 +807,15 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
           promptFreeH: "提示词 — 免费铸造", promptPaidH: "提示词 — 付费铸造",
           copyBtn: "复制提示词", copied: "已复制",
           agentNote: "两个提示词中的合约地址和金库地址均为已部署的 Cappybara 合约（0xba33f7ff4134af69af19ecdf141221666b577c32）及其金库（0xea92a9df3ad64b2de2e84ccb2cf96b216b06c9bb）。代理只会通过你控制的钱包准备交易——切勿分享你的助记词或私钥。提示词中的金额跟随铸造卡片的选择：免费铸造总额为数量 × 0.0001 BNB，付费铸造为数量 × 0.001 BNB。",
-          faqKicker: "常见问题", faqH2: "常见问题解答",
+          marketKicker: "二级市场", marketH2: "出售你的水豚",
+          marketP: "已经拥有水豚了吗？你可以在 BNB 链上的二级 NFT 市场转售。出售在市场本身完成——capyybara.fun 不保管你的 NFT，不定价，也不收取销售费用。挂单前请务必确认收藏合约地址正是 0xba33f7ff4134af69af19ecdf141221666b577c32，以免挂到假收藏。",
+          marketStep1H: "1. 打开市场", marketStep1P: "点击下方按钮在 BNB 链上打开 OpenSea，或在任意 BNB NFT 市场搜索上面的合约地址。",
+          marketStep2H: "2. 连接钱包", marketStep2P: "连接持有你水豚的同一个钱包，网络为 BNB 链（链 ID 56）。在买家购买之前，NFT 一直留在你的钱包里。",
+          marketStep3H: "3. 挂单出售", marketStep3P: "选择你的水豚，设定 BNB 价格，在钱包里批准挂单并确认。市场的销售条款和费用以市场本身为准，挂单前请先阅读。",
+          marketOpensea: "在 OpenSea 出售（BNB 链）→", marketFaq: "先看常见问题",
+          marketNote: "安全提示：真正的市场只会要求你在自己的钱包里批准挂单。切勿向任何人（包括市场、代理或买家）分享你的助记词或私钥。",
+          faq6q: "我可以出售我的水豚吗？", faq6p: "可以。持有者可以在 BNB 链上的二级 NFT 市场转售——见上面的“交易市场”部分。出售在市场完成，不在 capyybara.fun，你自己设定 BNB 价格。",
+faqKicker: "常见问题", faqH2: "常见问题解答",
           faq1q: "Cappybara 的总供应量是多少？",
           faq1p: "总供应量为 <b>10,000 只 NFT</b>，分为两个阶段：5,000 只免费铸造（代币 #1–#5,000）和 5,000 只付费铸造（代币 #5,001–#10,000）。",
           faq2q: "为什么免费铸造还要收费？",
