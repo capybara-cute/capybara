@@ -669,34 +669,6 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
               <p data-i18n="tokenAlloc3P">20,000,000 CAPPY held as a liquidity / ecosystem reserve. This is not a listing or price promise.</p>
             </div>
           </div>
-          <div class="market-tool" style="margin-top:24px">
-            <b data-i18n="tokenSupportH">Support — Donate, Get Tokens Later</b>
-            <p data-i18n="tokenSupportP">Support the project with a donation and receive CAPPY tokens later as appreciation. This is a donation, not a token sale: the token contract has no sale function, and tokens for donors are sent later by ordinary transfers from the deployer wallet, with the transaction hashes published.</p>
-            <div class="steps">
-              <div class="step">
-                <b data-i18n="tokenSupport1H">1. Donate</b>
-                <p data-i18n="tokenSupport1P">Donate BNB to the official donation wallet below. An address shown anywhere else is not official — always check it matches this page.</p>
-              </div>
-              <div class="step">
-                <b data-i18n="tokenSupport2H">2. Keep your proof</b>
-                <p data-i18n="tokenSupport2P">Keep your donation transaction hash and the wallet you donated from. That is how donors are recorded for the later distribution.</p>
-              </div>
-              <div class="step">
-                <b data-i18n="tokenSupport3H">3. Tokens sent later</b>
-                <p data-i18n="tokenSupport3P">CAPPY tokens for donors are distributed later, after the donation period. The token amount per donation and the distribution date are not set yet — they will be published here by the owner. Keep your donation proof until then.</p>
-              </div>
-            </div>
-            <p><span data-i18n="donWalletLabel">Donation wallet (BNB Chain):</span> <span class="mono">0xaa888bcb68dc6033aa60e0d78840e162128f0b59</span> <a href="https://bscscan.com/address/0xaa888bcb68dc6033aa60e0d78840e162128f0b59" target="_blank" rel="noopener" data-i18n="donWalletBsc">View on BscScan →</a></p>
-            <p><span data-i18n="donRaisedLabel">Raised:</span> <b id="donRaisedText">Loading…</b> <span data-i18n="donGoalLabel">of 1 BNB goal</span></p>
-            <div style="background:#0a1122;border:1px solid #2b3a63;border-radius:8px;height:18px;overflow:hidden"><div id="donBar" style="background:#ffd21f;height:100%;width:0%"></div></div>
-            <div style="margin-top:16px">
-              <b data-i18n="donBoardH">Donation Leaderboard — who sent BNB</b>
-              <button class="btn ghost" id="donRefreshBtn" type="button" data-i18n="donRefreshBtn" style="margin-left:8px">Refresh</button>
-              <div id="donBoard" style="margin-top:8px"><p class="status" data-i18n="donBoardLoading">Loading donations…</p></div>
-              <p class="status" id="donBoardStatus" data-i18n="donBoardNote">Live from the chain: every successful BNB transfer into the donation wallet, newest first. If the list cannot load, check the donation wallet directly on BscScan.</p>
-            </div>
-            <p class="agent-note" data-i18n="tokenSupportNote">Donation wallet is live below. The token amount per donation and the distribution date are still to be announced by the owner. Safety: a real donation request never asks for your seed phrase or private key.</p>
-          </div>
           <div class="cta-row" style="margin-top:24px">
             <a class="btn green" href="https://bscscan.com/token/0x1129d5541475ab514dd3127654a9ff72c08645db" target="_blank" rel="noopener" data-i18n="tokenBscBtn">View token on BscScan →</a>
             <a class="btn ghost" href="token-deploy.html" data-i18n="tokenDeployBtn">Token deploy page</a>
@@ -1945,89 +1917,6 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
       }
     </script>
   
-<script>
-(function () {
-  var WALLET = "0xaa888bcb68dc6033aa60e0d78840e162128f0b59";
-  var GOAL = 1;
-  var RPCS = ["https://bsc-dataseed.binance.org", "https://bsc-dataseed1.binance.org", "https://bsc-dataseed2.binance.org", "https://bsc.publicnode.com"];
-  function shortAddr(a) { return a.slice(0, 6) + "…" + a.slice(-4); }
-  function fmtBNB(v) { var n = Number(v); return (n < 0.000001 && n > 0) ? n.toExponential(2) : String(Math.round(n * 1000000) / 1000000); }
-  function setRaised(bnb) {
-    var t = document.getElementById("donRaisedText");
-    var bar = document.getElementById("donBar");
-    if (t) t.textContent = fmtBNB(bnb) + " BNB";
-    if (bar) bar.style.width = Math.min(100, (bnb / GOAL) * 100) + "%";
-  }
-  function renderBoard(list) {
-    var el = document.getElementById("donBoard");
-    if (!el) return;
-    var lang = (typeof STR !== "undefined" && STR) ? null : null;
-    if (!list || list.length === 0) {
-      el.innerHTML = "<p class=\"status\">No donations yet — be the first donor.</p>";
-      return;
-    }
-    var html = "<table style=\"width:100%;border-collapse:collapse\">";
-    list.forEach(function (d, i) {
-      var date = d.time ? new Date(d.time * 1000).toLocaleString() : "";
-      html += "<tr><td style=\"padding:6px 4px;border-bottom:1px solid #2b3a63\">#" + (i + 1) + "</td><td style=\"padding:6px 4px;border-bottom:1px solid #2b3a63;word-break:break-all\"><a href=\"https://bscscan.com/address/" + d.from + "\" target=\"_blank\" rel=\"noopener\">" + shortAddr(d.from) + "</a></td><td style=\"padding:6px 4px;border-bottom:1px solid #2b3a63\">" + fmtBNB(d.value) + " BNB</td><td style=\"padding:6px 4px;border-bottom:1px solid #2b3a63\">" + date + "</td><td style=\"padding:6px 4px;border-bottom:1px solid #2b3a63\"><a href=\"https://bscscan.com/tx/" + d.hash + "\" target=\"_blank\" rel=\"noopener\">Tx →</a></td></tr>";
-    });
-    html += "</table>";
-    el.innerHTML = html;
-  }
-  function fetchTxList(url) {
-    return fetch(url).then(function (r) { return r.json(); }).then(function (j) {
-      var arr = j && j.result;
-      if (!arr || !Array.isArray(arr)) throw new Error("bad txlist");
-      return arr.filter(function (tx) {
-        return tx && tx.to && tx.to.toLowerCase() === WALLET && tx.isError !== "1" && Number(tx.value) > 0;
-      }).map(function (tx) {
-        return { from: tx.from, value: Number(tx.value) / 1e18, time: Number(tx.timeStamp), hash: tx.hash };
-      }).sort(function (a, b) { return b.time - a.time; }).slice(0, 50);
-    });
-  }
-  function loadBalance() {
-    var body = JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_getBalance", params: [WALLET, "latest"] });
-    var chain = Promise.reject(new Error("no rpc"));
-    RPCS.forEach(function (rpc) {
-      chain = chain.catch(function () {
-        return fetch(rpc, { method: "POST", headers: { "Content-Type": "application/json" }, body: body }).then(function (r) { return r.json(); }).then(function (j) {
-          if (!j || !j.result) throw new Error("bad balance");
-          return parseInt(j.result, 16) / 1e18;
-        });
-      });
-    });
-    return chain;
-  }
-  function loadDonations() {
-    var board = document.getElementById("donBoard");
-    if (board) board.innerHTML = "<p class=\"status\">Loading donations…</p>";
-    var urls = [
-      "https://api.routescan.io/v2/network/mainnet/evm/56/etherscan/api?module=account&action=txlist&address=" + WALLET + "&startblock=0&endblock=99999999&sort=desc",
-      "https://api.etherscan.io/v2/api?chainid=56&module=account&action=txlist&address=" + WALLET + "&startblock=0&endblock=99999999&sort=desc"
-    ];
-    var txChain = Promise.reject(new Error("no tx source"));
-    urls.forEach(function (u) { txChain = txChain.catch(function () { return fetchTxList(u); }); });
-    txChain.then(function (list) {
-      var total = list.reduce(function (a, d) { return a + d.value; }, 0);
-      setRaised(total);
-      renderBoard(list);
-    }).catch(function () {
-      if (board) board.innerHTML = "<p class=\"status\">Leaderboard data could not be loaded right now. Check the donation wallet on <a href=\"https://bscscan.com/address/0xaa888bcb68dc6033aa60e0d78840e162128f0b59\" target=\"_blank\" rel=\"noopener\">BscScan</a> for the full history.</p>";
-      loadBalance().then(setRaised).catch(function () {});
-    });
-    // Raised from balance as well, in case tx history is unavailable but balance works
-    loadBalance().then(function (b) {
-      var t = document.getElementById("donRaisedText");
-      if (t && t.textContent.indexOf("Loading") === 0) setRaised(b);
-    }).catch(function () {});
-  }
-  document.addEventListener("DOMContentLoaded", function () {
-    var btn = document.getElementById("donRefreshBtn");
-    if (btn) btn.addEventListener("click", loadDonations);
-    loadDonations();
-  });
-  if (document.readyState !== "loading") loadDonations();
-})();
-</script>
+
 </body>
 </html>
