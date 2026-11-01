@@ -8,7 +8,7 @@
 <li>Token komunitas BEP20/ERC20, diberikan ke pembeli paid mint dan komunitas — <b>bukan dijual</b>. Tidak ada fungsi penjualan, tidak ada tax, tidak ada raised / target dana (raised max sudah dihapus user).</li>
 <li>Total supply tetap: <b>100.000.000 token</b>, dicetak sekali ke wallet deployer saat deploy, tidak bisa dicetak lagi.</li>
 <li>Pembagian yang disetujui: <b>50%</b> pembeli paid mint (dibagi rata per NFT paid saat snapshot; kalau semua 5.000 paid laku = 10.000 token per NFT paid), <b>30%</b> komunitas, <b>20%</b> cadangan likuiditas/ekosistem. Pembagian dilakukan owner lewat transfer biasa setelah deploy, dengan tx hash dipublikasikan — kontrak ini tidak punya fungsi distribusi otomatis.</li>
-<li><b>PERINGATAN SIMBOL:</b> kontrak NFT Cappybara yang sudah live sudah memakai simbol <b>CAPY</b> di BNB Chain. Kalau token ini juga memakai CAPY, wallet/explorer bisa membingungkan keduanya. Pertimbangkan simbol <b>CAPPY</b> di Langkah 2 sebelum sign — setelah deploy tidak bisa diubah lagi.</li>
+<li><b>PERINGATAN SIMBOL:</b> kontrak NFT Cappybara yang sudah live sudah memakai simbol <b>CAPY</b> di BNB Chain. Kalau token ini juga memakai CAPY, wallet/explorer bisa membingungkan keduanya. Simbol diputuskan owner: <b>CAPPY</b> (dipilih 1 Nov 2026, menggantikan CAPY di draft awal) — kolom di Langkah 2 sudah terisi CAPPY. Masih bisa diubah sebelum sign, tapi tidak disarankan kembali ke CAPY; setelah deploy tidak bisa diubah lagi.</li>
 <li>Kontrak NFT lama (0xba33f7ff4134af69af19ecdf141221666b577c32) <b>tidak diubah</b> oleh deploy ini. Token ini kontrak baru yang terpisah.</li>
 </ul></div>
 <div class="card"><h3>1. Jaringan &amp; Wallet</h3>
@@ -17,9 +17,9 @@
 <button id="switchMainnet">Pindah ke BNB Mainnet (56)</button>
 <button id="switchTestnet">Pindah ke BNB Testnet (97) — untuk uji dulu</button><p id="chainMsg"></p></div>
 <div class="card"><h3>2. Deploy Token</h3>
-<p>Nama dan simbol di bawah ini adalah nilai FINAL saat deploy. Ubah dulu sebelum sign kalau perlu (misalnya simbol CAPY menjadi CAPPY).</p>
+<p>Nama dan simbol di bawah ini adalah nilai FINAL saat deploy. Sudah terisi sesuai keputusan owner: nama Cappybara Token, simbol CAPPY. Masih bisa diubah sebelum sign kalau perlu, tapi setelah deploy tidak bisa diubah.</p>
 <label>Nama token</label><input id="inpName" value="Cappybara Token">
-<label>Simbol token</label><input id="inpSymbol" value="CAPY">
+<label>Simbol token</label><input id="inpSymbol" value="CAPPY">
 <p>Total supply: 100.000.000 token, 18 desimal, ke wallet deployer.</p>
 <button id="deploy">Deploy &amp; Sign di Wallet</button><p id="deployStatus"></p>
 <label>Data deploy (bytecode + argumen constructor)</label><textarea id="deployData" readonly></textarea>
