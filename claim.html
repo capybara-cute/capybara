@@ -1,33 +1,33 @@
 <!doctype html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Klaim CAPPY — Cappybara</title>
+<title>CAPPY Claim — Cappybara</title>
 <style>
 :root{color-scheme:dark;--bg:#0b0a08;--panel:#17120f;--gold:#e6b64c;--text:#eee9df;--muted:#aaa397;--line:#43351d;--green:#9ce66b}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,sans-serif}.wrap{width:min(760px,calc(100% - 32px));margin:48px auto}.card{background:var(--panel);border:1px solid var(--line);padding:24px;margin:18px 0;border-radius:8px}h1,h2{line-height:1.2}h1{color:var(--gold)}p{color:var(--muted)}.btn{border:1px solid var(--gold);background:#261d12;color:var(--text);padding:12px 18px;border-radius:5px;font-weight:700;cursor:pointer}.btn:disabled{opacity:.45;cursor:not-allowed}input{width:100%;background:#090807;border:1px solid var(--line);color:var(--text);font:inherit;padding:12px;border-radius:5px;margin:8px 0 14px}.status{padding:12px;border:1px solid var(--line);border-radius:5px;white-space:pre-wrap;overflow-wrap:anywhere}.small{font-size:13px}a{color:var(--gold)}label{font-weight:700;display:block}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
 </head>
 <body><main class="wrap">
-<a href="index.html">← Kembali ke situs Cappybara</a>
-<h1>Klaim CAPPY untuk minter pertama NFT</h1>
-<p>Setiap NFT yang tercatat di registry klaim berhak atas 10.000 CAPPY. Hak klaim milik wallet yang menerima NFT saat pertama kali dicetak, baik melalui free mint maupun paid mint. Pemilik NFT saat ini yang bukan minter pertama tidak dapat mengklaim. Masukkan ID NFT untuk memeriksa registry.</p>
+<a href="index.html">← Back to Cappybara</a>
+<h1>Claim CAPPY as an NFT's original minter</h1>
+<p>Each NFT recorded in the claim registry is eligible for 10,000 CAPPY. Only the wallet that first received the NFT at mint time may claim, whether it was minted through the free or paid mint. Current owners who were not the original minters cannot claim. Enter the NFT ID to check the registry.</p>
 <div class="card">
-  <b>Biaya klaim: 0,0003 BNB per NFT</b>
-  <p>Biaya dikirim ke treasury proyek yang ditetapkan pada kontrak. Satu NFT diklaim per transaksi. Pastikan rincian transaksi di dompet sebelum menyetujui.</p>
-  <p>Jaringan: BNB Smart Chain (56). Mint baru dapat diklaim setelah minter aslinya didaftarkan ke registry oleh admin proyek.</p>
-  <button class="btn" id="connect">Hubungkan dompet</button>
-  <div id="walletStatus" class="status" style="margin-top:14px">Belum terhubung.</div>
+  <b>Claim fee: 0.0003 BNB per NFT</b>
+  <p>The fee is sent to the project treasury specified in the contract. Only one NFT can be claimed per transaction. Review the transaction details in your wallet before approving.</p>
+  <p>Network: BNB Smart Chain (56). Newly minted NFTs become eligible after the project admin registers the original minter in the claim registry.</p>
+  <button class="btn" id="connect">Connect Wallet</button>
+  <div id="walletStatus" class="status" style="margin-top:14px">Not connected.</div>
 </div>
 <div class="card">
-  <h2>Periksa NFT</h2>
-  <label for="tokenId">ID NFT Cappybara</label>
-  <input id="tokenId" type="number" min="0" step="1" placeholder="Masukkan token ID">
-  <button class="btn" id="check" disabled>Periksa kelayakan</button>
-  <div id="result" class="status" style="margin-top:14px">Hubungkan wallet dan masukkan ID NFT.</div>
-  <button class="btn" id="claim" style="margin-top:14px" disabled>Klaim 10.000 CAPPY</button>
+  <h2>Check NFT</h2>
+  <label for="tokenId">Cappybara NFT ID</label>
+  <input id="tokenId" type="number" min="0" step="1" placeholder="Enter NFT ID">
+  <button class="btn" id="check" disabled>Check eligibility</button>
+  <div id="result" class="status" style="margin-top:14px">Connect your wallet and enter an NFT ID.</div>
+  <button class="btn" id="claim" style="margin-top:14px" disabled>Claim 10,000 CAPPY</button>
 </div>
-<p class="small">Situs tidak pernah meminta seed phrase atau private key. Klaim membutuhkan persetujuan transaksi dari wallet Anda.</p>
+<p class="small">This site will never ask for your seed phrase or private key. A claim requires your approval in your wallet.</p>
 </main>
 <script>
 (() => {
@@ -51,23 +51,23 @@
   $("connect").onclick = async () => {
     try {
       const p = providerObject();
-      if (!p) throw new Error("Dompet EVM tidak ditemukan. Buka halaman ini melalui browser dApp.");
+      if (!p) throw new Error("No EVM wallet found. Open this page in a dApp browser.");
       provider = new ethers.BrowserProvider(p);
       await provider.send("eth_requestAccounts", []);
       signer = await provider.getSigner();
       account = await signer.getAddress();
       const network = await provider.getNetwork();
       if (network.chainId !== 56n) {
-        setStatus("walletStatus", `Wallet terhubung: ${account}\nPindah ke BNB Smart Chain (56) untuk melanjutkan.`);
+        setStatus("walletStatus", `Wallet connected: ${account}\nSwitch to BNB Smart Chain (56) to continue.`);
         return;
       }
       if (!configured()) {
-        setStatus("walletStatus", `Wallet BNB Chain terhubung: ${account}\nKlaim belum dibuka: alamat kontrak registry klaim belum diisi setelah deployment.`);
+        setStatus("walletStatus", `Wallet connected to BNB Chain: ${account}\nClaims are not open yet: the claim registry contract address has not been set after deployment.`);
         return;
       }
       contract = new ethers.Contract(CLAIM_CONTRACT, ABI, provider);
       const [registered, alreadyClaimed] = await Promise.all([contract.registeredCount(), contract.claimedCount()]);
-      setStatus("walletStatus", `Wallet BNB Chain terhubung: ${account}\nRegistry aktif: ${registered} NFT tercatat; ${alreadyClaimed} klaim selesai.`);
+      setStatus("walletStatus", `Wallet connected to BNB Chain: ${account}\nClaim registry active: ${registered} NFTs registered; ${alreadyClaimed} claims completed.`);
       $("check").disabled = false;
     } catch(e) {
       setStatus("walletStatus", e.shortMessage || e.message || String(e));
@@ -77,17 +77,17 @@
   $("check").onclick = async () => {
     $("claim").disabled = true; eligibleId = null;
     try {
-      if (!contract || !account) throw new Error("Hubungkan wallet BNB Chain terlebih dahulu.");
+      if (!contract || !account) throw new Error("Connect to a BNB Chain wallet first.");
       const raw = $("tokenId").value.trim();
-      if (!/^\d+$/.test(raw)) throw new Error("Masukkan ID NFT berupa bilangan bulat non-negatif.");
+      if (!/^\d+$/.test(raw)) throw new Error("Enter the NFT ID as a non-negative integer.");
       const id = BigInt(raw);
       const [minter, done] = await Promise.all([contract.originalMinterOf(id), contract.claimed(id)]);
-      if (minter === ethers.ZeroAddress) throw new Error("ID NFT belum tercatat di registry. Mint baru dapat diklaim setelah admin mendaftarkan minter aslinya.");
-      if (minter.toLowerCase() !== account.toLowerCase()) throw new Error(`Tidak memenuhi syarat. NFT ini tercatat dicetak pertama kali oleh ${minter}.`);
-      if (done) throw new Error("Token untuk NFT ini sudah diklaim.");
+      if (minter === ethers.ZeroAddress) throw new Error("This NFT ID is not registered in the claim registry. Newly minted NFTs become eligible after the admin registers the original minter.");
+      if (minter.toLowerCase() !== account.toLowerCase()) throw new Error(`Not eligible. This NFT is recorded as having been originally minted by ${minter}.`);
+      if (done) throw new Error("The reward for this NFT has already been claimed.");
       eligibleId = id;
       const fee = await contract.CLAIM_FEE();
-      setStatus("result", `Memenuhi syarat: NFT #${id}\nMinter pertama: ${minter}\nReward: 10.000 CAPPY\nFee: ${ethers.formatEther(fee)} BNB`);
+      setStatus("result", `Eligible: NFT #${id}\nOriginal minter: ${minter}\nReward: 10,000 CAPPY\nFee: ${ethers.formatEther(fee)} BNB`);
       $("claim").disabled = false;
     } catch(e) {
       setStatus("result", e.shortMessage || e.message || String(e));
@@ -99,15 +99,15 @@
     $("claim").disabled = true;
     try {
       const fee = await contract.CLAIM_FEE();
-      setStatus("result", `Menyiapkan klaim NFT #${eligibleId}. Periksa dompet: reward 10.000 CAPPY dan fee 0,0003 BNB.`);
+      setStatus("result", `Preparing claim for NFT #${eligibleId}. Review your wallet: 10,000 CAPPY reward and ${ethers.formatEther(fee)} BNB fee.`);
       const tx = await contract.connect(signer).claim(eligibleId, {value: fee});
-      setStatus("result", `Transaksi dikirim: ${tx.hash}\nMenunggu konfirmasi BNB Chain…`);
+      setStatus("result", `Transaction submitted: ${tx.hash}\nWaiting for BNB Chain confirmation…`);
       await tx.wait();
-      setStatus("result", `Berhasil: NFT #${eligibleId} diklaim. Periksa saldo CAPPY di wallet minter pertama.`);
+      setStatus("result", `Success: NFT #${eligibleId} claimed. Check the CAPPY balance in the original minter's wallet.`);
       eligibleId = null;
     } catch(e) {
       $("claim").disabled = false;
-      setStatus("result", "Klaim gagal atau dibatalkan: " + (e.shortMessage || e.message || String(e)));
+      setStatus("result", "Claim failed or was canceled: " + (e.shortMessage || e.message || String(e)));
     }
   };
 })();
