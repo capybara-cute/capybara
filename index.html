@@ -675,7 +675,7 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
             <div class="steps">
               <div class="step">
                 <b data-i18n="tokenSupport1H">1. Donate</b>
-                <p data-i18n="tokenSupport1P">Donate to the donation wallet announced by the owner. Do not send anything to any address until the owner publishes the official donation wallet here — an address shown anywhere else is not official.</p>
+                <p data-i18n="tokenSupport1P">Donate BNB to the official donation wallet below. An address shown anywhere else is not official — always check it matches this page.</p>
               </div>
               <div class="step">
                 <b data-i18n="tokenSupport2H">2. Keep your proof</b>
@@ -683,10 +683,19 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
               </div>
               <div class="step">
                 <b data-i18n="tokenSupport3H">3. Tokens sent later</b>
-                <p data-i18n="tokenSupport3P">CAPPY tokens for donors are distributed later, after the donation period the owner announces. The donation wallet, the token amount per donation, and the distribution date are not set yet — they will be published here by the owner before donations open. Until then, do not donate.</p>
+                <p data-i18n="tokenSupport3P">CAPPY tokens for donors are distributed later, after the donation period. The token amount per donation and the distribution date are not set yet — they will be published here by the owner. Keep your donation proof until then.</p>
               </div>
             </div>
-            <p class="agent-note" data-i18n="tokenSupportNote">Status: donation details pending. The owner still needs to publish the donation wallet, the token amount per donation, and the distribution date. Safety: a real donation request never asks for your seed phrase or private key.</p>
+            <p><span data-i18n="donWalletLabel">Donation wallet (BNB Chain):</span> <span class="mono">0xaa888bcb68dc6033aa60e0d78840e162128f0b59</span> <a href="https://bscscan.com/address/0xaa888bcb68dc6033aa60e0d78840e162128f0b59" target="_blank" rel="noopener" data-i18n="donWalletBsc">View on BscScan →</a></p>
+            <p><span data-i18n="donRaisedLabel">Raised:</span> <b id="donRaisedText">Loading…</b> <span data-i18n="donGoalLabel">of 1 BNB goal</span></p>
+            <div style="background:#0a1122;border:1px solid #2b3a63;border-radius:8px;height:18px;overflow:hidden"><div id="donBar" style="background:#ffd21f;height:100%;width:0%"></div></div>
+            <div style="margin-top:16px">
+              <b data-i18n="donBoardH">Donation Leaderboard — who sent BNB</b>
+              <button class="btn ghost" id="donRefreshBtn" type="button" data-i18n="donRefreshBtn" style="margin-left:8px">Refresh</button>
+              <div id="donBoard" style="margin-top:8px"><p class="status" data-i18n="donBoardLoading">Loading donations…</p></div>
+              <p class="status" id="donBoardStatus" data-i18n="donBoardNote">Live from the chain: every successful BNB transfer into the donation wallet, newest first. If the list cannot load, check the donation wallet directly on BscScan.</p>
+            </div>
+            <p class="agent-note" data-i18n="tokenSupportNote">Donation wallet is live below. The token amount per donation and the distribution date are still to be announced by the owner. Safety: a real donation request never asks for your seed phrase or private key.</p>
           </div>
           <div class="cta-row" style="margin-top:24px">
             <a class="btn green" href="https://bscscan.com/token/0x1129d5541475ab514dd3127654a9ff72c08645db" target="_blank" rel="noopener" data-i18n="tokenBscBtn">View token on BscScan →</a>
@@ -795,7 +804,8 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
           promptFreeH: "Prompt — Free Mint", promptPaidH: "Prompt — Paid Mint",
           copyBtn: "COPY PROMPT", copied: "COPIED",
           agentNote: "The contract and treasury addresses in both prompts are the deployed Cappybara contract (0xba33f7ff4134af69af19ecdf141221666b577c32) and its treasury (0xea92a9df3ad64b2de2e84ccb2cf96b216b06c9bb). The agent only prepares transactions through a wallet you control — never share your seed phrase or private key. The prompt amounts follow your mint card picks: free mint totals amount × 0.0001 BNB, paid mint amount × 0.001 BNB.",
-          tokenKicker: "COMMUNITY TOKEN · DEPLOYED ON BNB CHAIN", tokenH2: "Cappybara Token (CAPPY)", tokenP: "A community token given to paid-mint buyers and to the community — it is not sold. Total supply is fixed at 100,000,000 CAPPY, minted once to the deployer at deploy, with no further minting, no sale function, no tax, and no fundraising target. This token is a separate contract from the Cappybara NFT — the NFT contract is unchanged.", tokenAddrLabel: "Token contract (BNB Chain 56):", tokenAlloc1H: "50% — Paid-mint buyers", tokenAlloc1P: "50,000,000 CAPPY, shared equally per paid NFT held at snapshot. If all 5,000 paid NFTs sell, that is 10,000 CAPPY per paid NFT.", tokenAlloc2H: "30% — Community", tokenAlloc2P: "30,000,000 CAPPY for community airdrops, giveaways and contributor rewards.", tokenAlloc3H: "20% — Reserve", tokenAlloc3P: "20,000,000 CAPPY held as a liquidity / ecosystem reserve. This is not a listing or price promise.", tokenSupportH: "Support — Donate, Get Tokens Later", tokenSupportP: "Support the project with a donation and receive CAPPY tokens later as appreciation. This is a donation, not a token sale: the token contract has no sale function, and tokens for donors are sent later by ordinary transfers from the deployer wallet, with the transaction hashes published.", tokenSupport1H: "1. Donate", tokenSupport1P: "Donate to the donation wallet announced by the owner. Do not send anything to any address until the owner publishes the official donation wallet here — an address shown anywhere else is not official.", tokenSupport2H: "2. Keep your proof", tokenSupport2P: "Keep your donation transaction hash and the wallet you donated from. That is how donors are recorded for the later distribution.", tokenSupport3H: "3. Tokens sent later", tokenSupport3P: "CAPPY tokens for donors are distributed later, after the donation period the owner announces. The donation wallet, the token amount per donation, and the distribution date are not set yet — they will be published here by the owner before donations open. Until then, do not donate.", tokenSupportNote: "Status: donation details pending. The owner still needs to publish the donation wallet, the token amount per donation, and the distribution date. Safety: a real donation request never asks for your seed phrase or private key.",
+          tokenKicker: "COMMUNITY TOKEN · DEPLOYED ON BNB CHAIN", tokenH2: "Cappybara Token (CAPPY)", tokenP: "A community token given to paid-mint buyers and to the community — it is not sold. Total supply is fixed at 100,000,000 CAPPY, minted once to the deployer at deploy, with no further minting, no sale function, no tax, and no fundraising target. This token is a separate contract from the Cappybara NFT — the NFT contract is unchanged.", tokenAddrLabel: "Token contract (BNB Chain 56):", tokenAlloc1H: "50% — Paid-mint buyers", tokenAlloc1P: "50,000,000 CAPPY, shared equally per paid NFT held at snapshot. If all 5,000 paid NFTs sell, that is 10,000 CAPPY per paid NFT.", tokenAlloc2H: "30% — Community", tokenAlloc2P: "30,000,000 CAPPY for community airdrops, giveaways and contributor rewards.", tokenAlloc3H: "20% — Reserve", tokenAlloc3P: "20,000,000 CAPPY held as a liquidity / ecosystem reserve. This is not a listing or price promise.", tokenSupportH: "Support — Donate, Get Tokens Later", tokenSupportP: "Support the project with a donation and receive CAPPY tokens later as appreciation. This is a donation, not a token sale: the token contract has no sale function, and tokens for donors are sent later by ordinary transfers from the deployer wallet, with the transaction hashes published.", tokenSupport1H: "1. Donate", tokenSupport1P: "Donate BNB to the official donation wallet below. An address shown anywhere else is not official — always check it matches this page.", tokenSupport2H: "2. Keep your proof", tokenSupport2P: "Keep your donation transaction hash and the wallet you donated from. That is how donors are recorded for the later distribution.", tokenSupport3H: "3. Tokens sent later", tokenSupport3P: "CAPPY tokens for donors are distributed later, after the donation period. The token amount per donation and the distribution date are not set yet — they will be published here by the owner. Keep your donation proof until then.", tokenSupportNote: "Donation wallet is live below. The token amount per donation and the distribution date are still to be announced by the owner. Safety: a real donation request never asks for your seed phrase or private key.",
+          donWalletLabel: "Donation wallet (BNB Chain):", donWalletBsc: "View on BscScan →", donRaisedLabel: "Raised:", donGoalLabel: "of 1 BNB goal", donBoardH: "Donation Leaderboard — who sent BNB", donRefreshBtn: "Refresh", donBoardLoading: "Loading donations…", donBoardNote: "Live from the chain: every successful BNB transfer into the donation wallet, newest first. If the list cannot load, check the donation wallet directly on BscScan.", donBoardEmpty: "No donations yet — be the first donor.", donBoardError: "Leaderboard data could not be loaded right now. Check the donation wallet on BscScan for the full history.",
           tokenBscBtn: "View token on BscScan →", tokenDeployBtn: "Token deploy page", tokenNote: "Distribution happens by ordinary transfers from the deployer wallet after deploy, with the transaction hashes published so anyone can check. Distribution is not claimed as finished here — check the published transfer hashes before treating any allocation as sent. Safety: a real token distribution never asks for your seed phrase or private key.",
           marketKicker: "MARKET ON CAPYYBARA.FUN · VIA ELEMENT", marketH2: "Buy &amp; Sell Cappybara",
           marketP: "Buy and sell right here on capyybara.fun — the trade itself is settled through Element, the NFT marketplace on BNB Chain. capyybara.fun does not hold your NFT, does not set your price, and does not take a sale fee. Element&apos;s BNB Chain trading fee is 2% and the collection royalty shown on Element is 0%. Always check that the collection contract is exactly 0xba33f7ff4134af69af19ecdf141221666b577c32 before you list or buy, so you do not trade a fake collection.",
@@ -918,7 +928,8 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
           promptFreeH: "提示词 — 免费铸造", promptPaidH: "提示词 — 付费铸造",
           copyBtn: "复制提示词", copied: "已复制",
           agentNote: "两个提示词中的合约地址和金库地址均为已部署的 Cappybara 合约（0xba33f7ff4134af69af19ecdf141221666b577c32）及其金库（0xea92a9df3ad64b2de2e84ccb2cf96b216b06c9bb）。代理只会通过你控制的钱包准备交易——切勿分享你的助记词或私钥。提示词中的金额跟随铸造卡片的选择：免费铸造总额为数量 × 0.0001 BNB，付费铸造为数量 × 0.001 BNB。",
-          tokenKicker: "社区代币 · 已部署于 BNB 链", tokenH2: "水豚代币 (CAPPY)", tokenP: "社区代币，赠送给付费铸造买家和社区——不出售。总供应量固定为 1 亿枚 CAPPY，部署时一次性铸造给部署者，不再增发，无销售功能，无税费，无募资目标。该代币是与水豚 NFT 不同的独立合约，NFT 合约保持不变。", tokenAddrLabel: "代币合约 (BNB 链 56):", tokenAlloc1H: "50% — 付费铸造买家", tokenAlloc1P: "5000 万枚 CAPPY，按快照时持有的付费 NFT 平分。若 5000 个付费 NFT 全部售出，则每个付费 NFT 可得 10000 枚 CAPPY。", tokenAlloc2H: "30% — 社区", tokenAlloc2P: "3000 万枚 CAPPY，用于社区空投、抽奖和贡献者奖励。", tokenAlloc3H: "20% — 储备", tokenAlloc3P: "2000 万枚 CAPPY，作为流动性 / 生态储备。这不是上所或价格承诺。", tokenSupportH: "支持 — 捐赠，之后获得代币", tokenSupportP: "通过捐赠支持项目，之后可获得 CAPPY 代币作为感谢。这属于捐赠，不是代币销售：代币合约没有销售功能，捐赠者的代币之后将由部署者钱包通过普通转账发送，交易哈希将公开。", tokenSupport1H: "1. 捐赠", tokenSupport1P: "向项目方公布的捐赠钱包捐赠。在项目方在此公布官方捐赠钱包之前，不要向任何地址发送任何资金——其他地方显示的地址均非官方。", tokenSupport2H: "2. 保留凭证", tokenSupport2P: "保留你的捐赠交易哈希和捐赠钱包地址。捐赠者就是凭此记录，以便之后分发代币。", tokenSupport3H: "3. 之后发送代币", tokenSupport3P: "捐赠者的 CAPPY 代币将在项目方公布的捐赠期结束后分发。捐赠钱包、每笔捐赠对应的代币数量和分发日期尚未确定——将在捐赠开放前由项目方在此公布。在此之前，请勿捐赠。", tokenSupportNote: "状态：捐赠详情待定。项目方仍需公布捐赠钱包、每笔捐赠对应的代币数量和分发日期。安全提示：真正的捐赠请求永远不会索要你的助记词或私钥。",
+          tokenKicker: "社区代币 · 已部署于 BNB 链", tokenH2: "水豚代币 (CAPPY)", tokenP: "社区代币，赠送给付费铸造买家和社区——不出售。总供应量固定为 1 亿枚 CAPPY，部署时一次性铸造给部署者，不再增发，无销售功能，无税费，无募资目标。该代币是与水豚 NFT 不同的独立合约，NFT 合约保持不变。", tokenAddrLabel: "代币合约 (BNB 链 56):", tokenAlloc1H: "50% — 付费铸造买家", tokenAlloc1P: "5000 万枚 CAPPY，按快照时持有的付费 NFT 平分。若 5000 个付费 NFT 全部售出，则每个付费 NFT 可得 10000 枚 CAPPY。", tokenAlloc2H: "30% — 社区", tokenAlloc2P: "3000 万枚 CAPPY，用于社区空投、抽奖和贡献者奖励。", tokenAlloc3H: "20% — 储备", tokenAlloc3P: "2000 万枚 CAPPY，作为流动性 / 生态储备。这不是上所或价格承诺。", tokenSupportH: "支持 — 捐赠，之后获得代币", tokenSupportP: "通过捐赠支持项目，之后可获得 CAPPY 代币作为感谢。这属于捐赠，不是代币销售：代币合约没有销售功能，捐赠者的代币之后将由部署者钱包通过普通转账发送，交易哈希将公开。", tokenSupport1H: "1. 捐赠", tokenSupport1P: "向下方官方捐赠钱包捐赠 BNB。其他地方显示的地址均非官方——请务必核对与本页一致。", tokenSupport2H: "2. 保留凭证", tokenSupport2P: "保留你的捐赠交易哈希和捐赠钱包地址。捐赠者就是凭此记录，以便之后分发代币。", tokenSupport3H: "3. 之后发送代币", tokenSupport3P: "捐赠者的 CAPPY 代币将在捐赠期结束后分发。每笔捐赠对应的代币数量和分发日期尚未确定——将由项目方在此公布。请保留你的捐赠凭证。", tokenSupportNote: "捐赠钱包已在下方公布。每笔捐赠对应的代币数量和分发日期仍待项目方公布。安全提示：真正的捐赠请求永远不会索要你的助记词或私钥。",
+          donWalletLabel: "捐赠钱包 (BNB 链):", donWalletBsc: "在 BscScan 查看 →", donRaisedLabel: "已筹集:", donGoalLabel: "，目标 1 BNB", donBoardH: "捐赠排行榜 — 谁发送了 BNB", donRefreshBtn: "刷新", donBoardLoading: "正在加载捐赠记录…", donBoardNote: "链上实时数据：所有成功转入捐赠钱包的 BNB 转账，最新在前。如果列表无法加载，请直接在 BscScan 查看捐赠钱包。", donBoardEmpty: "暂无捐赠——成为第一位捐赠者。", donBoardError: "目前无法加载排行榜数据。请在 BscScan 查看捐赠钱包的完整记录。",
           tokenBscBtn: "在 BscScan 查看代币 →", tokenDeployBtn: "代币部署页面", tokenNote: "分发由部署者钱包在部署后通过普通转账完成，交易哈希将公开，任何人都可以核查。此处不声称分发已经完成——在将任何分配视为已发送之前，请先核对已公开的转账哈希。安全提示：真正的代币分发永远不会索要你的助记词或私钥。",
           marketKicker: "在 CAPYYBARA.FUN 交易 · 经由 ELEMENT", marketH2: "买卖水豚",
           marketP: "直接在 capyybara.fun 上买卖——交易本身通过 BNB 链上的 NFT 市场 Element 结算。capyybara.fun 不保管你的 NFT，不定价，也不收取销售费用。Element 在 BNB 链上的交易费为 2%，该收藏在 Element 上显示的版税为 0%。挂单或购买前请务必确认收藏合约地址正是 0xba33f7ff4134af69af19ecdf141221666b577c32，以免交易到假收藏。",
@@ -1933,5 +1944,90 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
         });
       }
     </script>
-  </body>
+  
+<script>
+(function () {
+  var WALLET = "0xaa888bcb68dc6033aa60e0d78840e162128f0b59";
+  var GOAL = 1;
+  var RPCS = ["https://bsc-dataseed.binance.org", "https://bsc-dataseed1.binance.org", "https://bsc-dataseed2.binance.org", "https://bsc.publicnode.com"];
+  function shortAddr(a) { return a.slice(0, 6) + "…" + a.slice(-4); }
+  function fmtBNB(v) { var n = Number(v); return (n < 0.000001 && n > 0) ? n.toExponential(2) : String(Math.round(n * 1000000) / 1000000); }
+  function setRaised(bnb) {
+    var t = document.getElementById("donRaisedText");
+    var bar = document.getElementById("donBar");
+    if (t) t.textContent = fmtBNB(bnb) + " BNB";
+    if (bar) bar.style.width = Math.min(100, (bnb / GOAL) * 100) + "%";
+  }
+  function renderBoard(list) {
+    var el = document.getElementById("donBoard");
+    if (!el) return;
+    var lang = (typeof STR !== "undefined" && STR) ? null : null;
+    if (!list || list.length === 0) {
+      el.innerHTML = "<p class=\"status\">No donations yet — be the first donor.</p>";
+      return;
+    }
+    var html = "<table style=\"width:100%;border-collapse:collapse\">";
+    list.forEach(function (d, i) {
+      var date = d.time ? new Date(d.time * 1000).toLocaleString() : "";
+      html += "<tr><td style=\"padding:6px 4px;border-bottom:1px solid #2b3a63\">#" + (i + 1) + "</td><td style=\"padding:6px 4px;border-bottom:1px solid #2b3a63;word-break:break-all\"><a href=\"https://bscscan.com/address/" + d.from + "\" target=\"_blank\" rel=\"noopener\">" + shortAddr(d.from) + "</a></td><td style=\"padding:6px 4px;border-bottom:1px solid #2b3a63\">" + fmtBNB(d.value) + " BNB</td><td style=\"padding:6px 4px;border-bottom:1px solid #2b3a63\">" + date + "</td><td style=\"padding:6px 4px;border-bottom:1px solid #2b3a63\"><a href=\"https://bscscan.com/tx/" + d.hash + "\" target=\"_blank\" rel=\"noopener\">Tx →</a></td></tr>";
+    });
+    html += "</table>";
+    el.innerHTML = html;
+  }
+  function fetchTxList(url) {
+    return fetch(url).then(function (r) { return r.json(); }).then(function (j) {
+      var arr = j && j.result;
+      if (!arr || !Array.isArray(arr)) throw new Error("bad txlist");
+      return arr.filter(function (tx) {
+        return tx && tx.to && tx.to.toLowerCase() === WALLET && tx.isError !== "1" && Number(tx.value) > 0;
+      }).map(function (tx) {
+        return { from: tx.from, value: Number(tx.value) / 1e18, time: Number(tx.timeStamp), hash: tx.hash };
+      }).sort(function (a, b) { return b.time - a.time; }).slice(0, 50);
+    });
+  }
+  function loadBalance() {
+    var body = JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_getBalance", params: [WALLET, "latest"] });
+    var chain = Promise.reject(new Error("no rpc"));
+    RPCS.forEach(function (rpc) {
+      chain = chain.catch(function () {
+        return fetch(rpc, { method: "POST", headers: { "Content-Type": "application/json" }, body: body }).then(function (r) { return r.json(); }).then(function (j) {
+          if (!j || !j.result) throw new Error("bad balance");
+          return parseInt(j.result, 16) / 1e18;
+        });
+      });
+    });
+    return chain;
+  }
+  function loadDonations() {
+    var board = document.getElementById("donBoard");
+    if (board) board.innerHTML = "<p class=\"status\">Loading donations…</p>";
+    var urls = [
+      "https://api.routescan.io/v2/network/mainnet/evm/56/etherscan/api?module=account&action=txlist&address=" + WALLET + "&startblock=0&endblock=99999999&sort=desc",
+      "https://api.etherscan.io/v2/api?chainid=56&module=account&action=txlist&address=" + WALLET + "&startblock=0&endblock=99999999&sort=desc"
+    ];
+    var txChain = Promise.reject(new Error("no tx source"));
+    urls.forEach(function (u) { txChain = txChain.catch(function () { return fetchTxList(u); }); });
+    txChain.then(function (list) {
+      var total = list.reduce(function (a, d) { return a + d.value; }, 0);
+      setRaised(total);
+      renderBoard(list);
+    }).catch(function () {
+      if (board) board.innerHTML = "<p class=\"status\">Leaderboard data could not be loaded right now. Check the donation wallet on <a href=\"https://bscscan.com/address/0xaa888bcb68dc6033aa60e0d78840e162128f0b59\" target=\"_blank\" rel=\"noopener\">BscScan</a> for the full history.</p>";
+      loadBalance().then(setRaised).catch(function () {});
+    });
+    // Raised from balance as well, in case tx history is unavailable but balance works
+    loadBalance().then(function (b) {
+      var t = document.getElementById("donRaisedText");
+      if (t && t.textContent.indexOf("Loading") === 0) setRaised(b);
+    }).catch(function () {});
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    var btn = document.getElementById("donRefreshBtn");
+    if (btn) btn.addEventListener("click", loadDonations);
+    loadDonations();
+  });
+  if (document.readyState !== "loading") loadDonations();
+})();
+</script>
+</body>
 </html>
