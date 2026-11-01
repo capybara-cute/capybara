@@ -581,30 +581,46 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
         </div>
       </section>
 
-      <!-- MARKETPLACE -->
+      <!-- MARKETPLACE — on capyybara.fun, settled via Element -->
       <section id="market">
         <div class="wrap">
           <div class="sec-head">
-            <div class="sec-kicker" data-i18n="marketKicker">SECONDARY MARKET</div>
-            <h2 data-i18n="marketH2">Sell Your Cappybara</h2>
-            <p data-i18n="marketP">Already own a Cappybara? You can resell it on a secondary NFT marketplace on BNB Chain. Selling happens on the marketplace itself — capyybara.fun does not hold your NFT, does not set your price, and does not take a sale fee. Always check that the collection contract is exactly <span class="mono">0xba33f7ff4134af69af19ecdf141221666b577c32</span> before you list, so you do not list a fake collection.</p>
+            <div class="sec-kicker" data-i18n="marketKicker">MARKET ON CAPYYBARA.FUN · VIA ELEMENT</div>
+            <h2 data-i18n="marketH2">Buy &amp; Sell Cappybara</h2>
+            <p data-i18n="marketP">Buy and sell right here on capyybara.fun — the trade itself is settled through Element, the NFT marketplace on BNB Chain. capyybara.fun does not hold your NFT, does not set your price, and does not take a sale fee. Element&apos;s BNB Chain trading fee is 2% and the collection royalty shown on Element is 0%. Always check that the collection contract is exactly <span class="mono">0xba33f7ff4134af69af19ecdf141221666b577c32</span> before you list or buy, so you do not trade a fake collection.</p>
+            <p class="agent-note" data-i18n="marketSnapshot">Element snapshot, 1 Nov 2026 14:07 WIB: floor 0.000742 BNB · 13 active listings · 1,099 items · 543 owners · 1.1% listed · royalty 0%. These numbers move as trades happen — Element shows the live numbers.</p>
           </div>
           <div class="steps">
             <div class="step">
-              <b data-i18n="marketStep1H">1. Open the marketplace</b>
-              <p data-i18n="marketStep1P">Open OpenSea on BNB Chain with the button below, or open any BNB NFT marketplace and search for the contract address above.</p>
+              <b data-i18n="marketStep1H">1. Browse on Element</b>
+              <p data-i18n="marketStep1P">Open the live Cappybara collection on Element with the button below and browse the listings that are for sale right now.</p>
             </div>
             <div class="step">
-              <b data-i18n="marketStep2H">2. Connect your wallet</b>
-              <p data-i18n="marketStep2P">Connect the same wallet that holds your Cappybara, on BNB Chain (chain ID 56). Your NFT stays in your wallet until a buyer buys it.</p>
+              <b data-i18n="marketStep2H">2. Sell yours from here</b>
+              <p data-i18n="marketStep2P">Connect your wallet on this site, enter your Cappybara&apos;s token ID below, and check that you own it. Then open its Element page and list it there.</p>
             </div>
             <div class="step">
-              <b data-i18n="marketStep3H">3. List it for sale</b>
-              <p data-i18n="marketStep3P">Pick your Cappybara, set your price in BNB, approve the listing in your wallet, and confirm. The marketplace&apos;s own sale terms and fees apply — read them on the marketplace before you list.</p>
+              <b data-i18n="marketStep3H">3. Buy on Element</b>
+              <p data-i18n="marketStep3P">Enter a token ID below (or browse the collection), open its Element page, click Buy Now, and confirm in your wallet. The NFT moves to the buyer and the seller receives the funds, minus Element&apos;s fee.</p>
             </div>
           </div>
+          <div class="market-tool" style="margin-top:24px">
+            <b data-i18n="marketToolH">Sell / Buy tool — via Element</b>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+              <label style="flex:1;min-width:180px"><span data-i18n="marketTokenLabel">Cappybara token ID</span><br><input id="marketTokenId" type="number" min="1" max="10000" step="1" placeholder="e.g. 106" style="width:100%;margin-top:6px"></label>
+              <label style="flex:1;min-width:180px"><span data-i18n="marketPriceLabel">Your price (BNB)</span><br><input id="marketPrice" type="number" min="0" step="0.000001" placeholder="e.g. 0.000742" style="width:100%;margin-top:6px"></label>
+            </div>
+            <p data-i18n="marketPriceNote" style="margin-top:8px">The price here is only your plan: at Element&apos;s 2% BNB fee you would receive price × 0.98. Set the same price again on Element — this page does not send a price to Element by itself.</p>
+            <div class="cta-row" style="margin-top:12px">
+              <button class="btn ghost" id="marketCheckBtn" type="button" data-i18n="marketCheckBtn">Check ownership</button>
+              <a class="btn green" id="marketSellBtn" href="https://element.market/collections/cappybara" target="_blank" rel="noopener" data-i18n="marketSellBtn">List this Cappybara on Element →</a>
+              <a class="btn ghost" id="marketBuyBtn" href="https://element.market/collections/cappybara" target="_blank" rel="noopener" data-i18n="marketBuyBtn">Buy on Element →</a>
+            </div>
+            <p class="status" id="marketCheckStatus" data-i18n="marketCheckIdle">Enter a token ID (1–10,000) and check ownership, or open the collection on Element.</p>
+            <p class="agent-note" data-i18n="marketListNote">Listing on Element: on the token&apos;s Element page click Sell, set your price and duration, then Start Listing and confirm in your wallet. Your NFT stays in your wallet until a buyer buys it. Live Element listings are shown on Element itself, not pulled into this static page.</p>
+          </div>
           <div class="cta-row" style="margin-top:24px">
-            <a class="btn green" href="https://opensea.io/assets/bsc/0xba33f7ff4134af69af19ecdf141221666b577c32" target="_blank" rel="noopener" data-i18n="marketOpensea">Sell on OpenSea (BNB Chain) →</a>
+            <a class="btn green" href="https://element.market/collections/cappybara" target="_blank" rel="noopener" data-i18n="marketBrowseBtn">Browse all listings on Element →</a>
             <a class="btn ghost" href="#faq" data-i18n="marketFaq">Read the FAQ first</a>
           </div>
           <p class="agent-note" data-i18n="marketNote">Safety: a real marketplace only ever asks you to approve a listing in your own wallet. Never share your seed phrase or private key with anyone, including a marketplace, an agent, or a buyer.</p>
@@ -641,7 +657,7 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
             </div>
           <div class="qa">
             <h3 data-i18n="faq6q">Can I sell my Cappybara?</h3>
-            <p data-i18n="faq6p">Yes. Holders can resell on a secondary NFT marketplace on BNB Chain — see the <a href="#market">Marketplace</a> section above. Selling happens on the marketplace, not on capyybara.fun, and you set your own price in BNB.</p>
+            <p data-i18n="faq6p">Yes. Use the <a href="#market">Marketplace</a> section above: check your token, then list it on Element, where the trade is settled. You set your own price in BNB; Element&apos;s BNB Chain fee is 2% and the royalty shown is 0%.</p>
           </div>
           </div>
         </div>
@@ -710,14 +726,24 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
           promptFreeH: "Prompt — Free Mint", promptPaidH: "Prompt — Paid Mint",
           copyBtn: "COPY PROMPT", copied: "COPIED",
           agentNote: "The contract and treasury addresses in both prompts are the deployed Cappybara contract (0xba33f7ff4134af69af19ecdf141221666b577c32) and its treasury (0xea92a9df3ad64b2de2e84ccb2cf96b216b06c9bb). The agent only prepares transactions through a wallet you control — never share your seed phrase or private key. The prompt amounts follow your mint card picks: free mint totals amount × 0.0001 BNB, paid mint amount × 0.001 BNB.",
-          marketKicker: "SECONDARY MARKET", marketH2: "Sell Your Cappybara",
-          marketP: "Already own a Cappybara? You can resell it on a secondary NFT marketplace on BNB Chain. Selling happens on the marketplace itself — capyybara.fun does not hold your NFT, does not set your price, and does not take a sale fee. Always check that the collection contract is exactly 0xba33f7ff4134af69af19ecdf141221666b577c32 before you list, so you do not list a fake collection.",
-          marketStep1H: "1. Open the marketplace", marketStep1P: "Open OpenSea on BNB Chain with the button below, or open any BNB NFT marketplace and search for the contract address above.",
-          marketStep2H: "2. Connect your wallet", marketStep2P: "Connect the same wallet that holds your Cappybara, on BNB Chain (chain ID 56). Your NFT stays in your wallet until a buyer buys it.",
-          marketStep3H: "3. List it for sale", marketStep3P: "Pick your Cappybara, set your price in BNB, approve the listing in your wallet, and confirm. The marketplace&apos;s own sale terms and fees apply — read them on the marketplace before you list.",
-          marketOpensea: "Sell on OpenSea (BNB Chain) →", marketFaq: "Read the FAQ first",
-          marketNote: "Safety: a real marketplace only ever asks you to approve a listing in your own wallet. Never share your seed phrase or private key with anyone, including a marketplace, an agent, or a buyer.",
-          faq6q: "Can I sell my Cappybara?", faq6p: "Yes. Holders can resell on a secondary NFT marketplace on BNB Chain — see the Marketplace section above. Selling happens on the marketplace, not on capyybara.fun, and you set your own price in BNB.",
+          marketKicker: "MARKET ON CAPYYBARA.FUN · VIA ELEMENT", marketH2: "Buy &amp; Sell Cappybara",
+          marketP: "Buy and sell right here on capyybara.fun — the trade itself is settled through Element, the NFT marketplace on BNB Chain. capyybara.fun does not hold your NFT, does not set your price, and does not take a sale fee. Element&apos;s BNB Chain trading fee is 2% and the collection royalty shown on Element is 0%. Always check that the collection contract is exactly 0xba33f7ff4134af69af19ecdf141221666b577c32 before you list or buy, so you do not trade a fake collection.",
+          marketSnapshot: "Element snapshot, 1 Nov 2026 14:07 WIB: floor 0.000742 BNB · 13 active listings · 1,099 items · 543 owners · 1.1% listed · royalty 0%. These numbers move as trades happen — Element shows the live numbers.",
+          marketStep1H: "1. Browse on Element", marketStep1P: "Open the live Cappybara collection on Element with the button below and browse the listings that are for sale right now.",
+          marketStep2H: "2. Sell yours from here", marketStep2P: "Connect your wallet on this site, enter your Cappybara&apos;s token ID below, and check that you own it. Then open its Element page and list it there.",
+          marketStep3H: "3. Buy on Element", marketStep3P: "Enter a token ID below (or browse the collection), open its Element page, click Buy Now, and confirm in your wallet. The NFT moves to the buyer and the seller receives the funds, minus Element&apos;s fee.",
+          marketToolH: "Sell / Buy tool — via Element",
+          marketTokenLabel: "Cappybara token ID", marketPriceLabel: "Your price (BNB)",
+          marketPriceNote: "The price here is only your plan: at Element&apos;s 2% BNB fee you would receive price × 0.98. Set the same price again on Element — this page does not send a price to Element by itself.",
+          marketCheckBtn: "Check ownership", marketCheckIdle: "Enter a token ID (1–10,000) and check ownership, or open the collection on Element.",
+          marketNeedWallet: "Connect your wallet on this site first, then check ownership again.",
+          marketInvalid: "Enter a token ID from 1 to 10,000.",
+          marketOwned: "You own Cappybara #{id} — open its Element page and click Sell to list it.",
+          marketNotOwned: "Wallet {addr} does not own Cappybara #{id} on BNB Chain. Connect the wallet that holds it.",
+          marketCheckFail: "Could not check ownership on BNB Chain right now — try again, or check the token on Element.",
+          marketSellBtn: "List this Cappybara on Element →", marketBuyBtn: "Buy on Element →", marketBrowseBtn: "Browse all listings on Element →",
+          marketListNote: "Listing on Element: on the token&apos;s Element page click Sell, set your price and duration, then Start Listing and confirm in your wallet. Your NFT stays in your wallet until a buyer buys it. Live Element listings are shown on Element itself, not pulled into this static page.",
+          faq6q: "Can I sell my Cappybara?", faq6p: "Yes. Use the <a href='#market'>Marketplace</a> section above: check your token, then list it on Element, where the trade is settled. You set your own price in BNB; Element&apos;s BNB Chain fee is 2% and the royalty shown is 0%.",
           faqKicker: "FAQ", faqH2: "Frequently Asked Questions",
           faq1q: "What is the total Cappybara supply?",
           faq1p: "Total supply is <b>10,000 NFTs</b>, split into two phases: 5,000 free mints (tokens #1–#5,000) and 5,000 paid mints (tokens #5,001–#10,000).",
@@ -807,14 +833,24 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
           promptFreeH: "提示词 — 免费铸造", promptPaidH: "提示词 — 付费铸造",
           copyBtn: "复制提示词", copied: "已复制",
           agentNote: "两个提示词中的合约地址和金库地址均为已部署的 Cappybara 合约（0xba33f7ff4134af69af19ecdf141221666b577c32）及其金库（0xea92a9df3ad64b2de2e84ccb2cf96b216b06c9bb）。代理只会通过你控制的钱包准备交易——切勿分享你的助记词或私钥。提示词中的金额跟随铸造卡片的选择：免费铸造总额为数量 × 0.0001 BNB，付费铸造为数量 × 0.001 BNB。",
-          marketKicker: "二级市场", marketH2: "出售你的水豚",
-          marketP: "已经拥有水豚了吗？你可以在 BNB 链上的二级 NFT 市场转售。出售在市场本身完成——capyybara.fun 不保管你的 NFT，不定价，也不收取销售费用。挂单前请务必确认收藏合约地址正是 0xba33f7ff4134af69af19ecdf141221666b577c32，以免挂到假收藏。",
-          marketStep1H: "1. 打开市场", marketStep1P: "点击下方按钮在 BNB 链上打开 OpenSea，或在任意 BNB NFT 市场搜索上面的合约地址。",
-          marketStep2H: "2. 连接钱包", marketStep2P: "连接持有你水豚的同一个钱包，网络为 BNB 链（链 ID 56）。在买家购买之前，NFT 一直留在你的钱包里。",
-          marketStep3H: "3. 挂单出售", marketStep3P: "选择你的水豚，设定 BNB 价格，在钱包里批准挂单并确认。市场的销售条款和费用以市场本身为准，挂单前请先阅读。",
-          marketOpensea: "在 OpenSea 出售（BNB 链）→", marketFaq: "先看常见问题",
-          marketNote: "安全提示：真正的市场只会要求你在自己的钱包里批准挂单。切勿向任何人（包括市场、代理或买家）分享你的助记词或私钥。",
-          faq6q: "我可以出售我的水豚吗？", faq6p: "可以。持有者可以在 BNB 链上的二级 NFT 市场转售——见上面的“交易市场”部分。出售在市场完成，不在 capyybara.fun，你自己设定 BNB 价格。",
+          marketKicker: "在 CAPYYBARA.FUN 交易 · 经由 ELEMENT", marketH2: "买卖水豚",
+          marketP: "直接在 capyybara.fun 上买卖——交易本身通过 BNB 链上的 NFT 市场 Element 结算。capyybara.fun 不保管你的 NFT，不定价，也不收取销售费用。Element 在 BNB 链上的交易费为 2%，该收藏在 Element 上显示的版税为 0%。挂单或购买前请务必确认收藏合约地址正是 0xba33f7ff4134af69af19ecdf141221666b577c32，以免交易到假收藏。",
+          marketSnapshot: "Element 快照，2026 年 11 月 1 日 14:07 WIB：地板价 0.000742 BNB · 13 个在售挂单 · 1,099 件 · 543 位持有者 · 1.1% 已挂单 · 版税 0%。这些数字会随交易变化——实时数字请看 Element。",
+          marketStep1H: "1. 在 Element 浏览", marketStep1P: "点击下方按钮打开 Element 上的水豚实时收藏，浏览当前在售的挂单。",
+          marketStep2H: "2. 在这里出售你的水豚", marketStep2P: "在本网站连接钱包，在下方输入你的水豚代币 ID 并核对所有权，然后打开它在 Element 的页面进行挂单。",
+          marketStep3H: "3. 在 Element 购买", marketStep3P: "在下方输入代币 ID（或浏览收藏），打开它在 Element 的页面，点击 Buy Now 并在钱包里确认。NFT 会转给买家，卖家收到扣除 Element 费用后的款项。",
+          marketToolH: "出售 / 购买工具——经由 Element",
+          marketTokenLabel: "水豚代币 ID", marketPriceLabel: "你的价格（BNB）",
+          marketPriceNote: "这里的价格只是你的计划：按 Element 2% 的 BNB 费用计算，你将收到价格 × 0.98。请在 Element 上再设定一次相同的价格——本页面本身不会把价格发送给 Element。",
+          marketCheckBtn: "核对所有权", marketCheckIdle: "输入代币 ID（1–10,000）并核对所有权，或在 Element 上打开收藏。",
+          marketNeedWallet: "请先在本网站连接钱包，再重新核对所有权。",
+          marketInvalid: "请输入 1 到 10,000 之间的代币 ID。",
+          marketOwned: "你拥有水豚 #{id}——打开它在 Element 的页面并点击 Sell 即可挂单。",
+          marketNotOwned: "钱包 {addr} 在 BNB 链上并不拥有水豚 #{id}。请连接持有它的钱包。",
+          marketCheckFail: "目前无法在 BNB 链上核对所有权——请重试，或在 Element 上查看该代币。",
+          marketSellBtn: "在 Element 挂单出售这只水豚 →", marketBuyBtn: "在 Element 购买 →", marketBrowseBtn: "在 Element 浏览全部挂单 →",
+          marketListNote: "在 Element 挂单：在代币的 Element 页面点击 Sell，设定价格和时长，然后点击 Start Listing 并在钱包里确认。在买家购买之前，NFT 一直留在你的钱包里。Element 的实时挂单显示在 Element 本身，不会拉取到这个静态页面。",
+          faq6q: "我可以出售我的水豚吗？", faq6p: "可以。使用上面的“交易市场”部分：核对你的代币，然后在 Element 上挂单，交易在那里结算。你自己设定 BNB 价格；Element 在 BNB 链上的费用为 2%，显示的版税为 0%。",
 faqKicker: "常见问题", faqH2: "常见问题解答",
           faq1q: "Cappybara 的总供应量是多少？",
           faq1p: "总供应量为 <b>10,000 只 NFT</b>，分为两个阶段：5,000 只免费铸造（代币 #1–#5,000）和 5,000 只付费铸造（代币 #5,001–#10,000）。",
@@ -1575,6 +1611,74 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
       if (liveRefreshBtn) liveRefreshBtn.addEventListener("click", refreshLiveSupply);
       refreshLiveSupply();
       setInterval(refreshLiveSupply, 30000);
+
+
+      /* ================= MARKET — via Element =================
+         On-site tool only: verify ownership on-chain (ownerOf) and
+         deep-link to the token's verified Element page, where the
+         listing / purchase is actually signed and settled. This
+         static page never posts an Element order itself and never
+         embeds an Element API key. */
+      var ELEMENT_COLLECTION_URL = "https://element.market/collections/cappybara";
+      function elementAssetUrl(tokenId) {
+        return "https://element.market/assets/bsc/" + CONTRACT_ADDRESS + "/" + tokenId;
+      }
+      function marketTokenId() {
+        var el = document.getElementById("marketTokenId");
+        var n = el ? parseInt(el.value, 10) : NaN;
+        return (isFinite(n) && n >= 1 && n <= 10000) ? n : null;
+      }
+      function marketStatus(msg, kind) {
+        var el = document.getElementById("marketCheckStatus");
+        if (el) { el.textContent = msg; el.className = "status show" + (kind ? " " + kind : ""); }
+      }
+      function updateMarketLinks() {
+        var token = marketTokenId();
+        var url = token ? elementAssetUrl(token) : ELEMENT_COLLECTION_URL;
+        ["marketSellBtn", "marketBuyBtn"].forEach(function (id) {
+          var a = document.getElementById(id);
+          if (a) a.setAttribute("href", url);
+        });
+        var priceEl = document.getElementById("marketPrice");
+        var price = priceEl ? parseFloat(priceEl.value) : NaN;
+        if (isFinite(price) && price > 0) {
+          var net = Math.round(price * 0.98 * 1000000) / 1000000;
+          marketStatus(price + " BNB -> " + net + " BNB after 2% Element fee.", "ok");
+        }
+      }
+      function checkMarketOwnership() {
+        var token = marketTokenId();
+        if (!token) { marketStatus(t("marketInvalid"), "err"); return; }
+        if (!account) { marketStatus(t("marketNeedWallet"), "err"); return; }
+        var data = "0x6352211e" + ("0000000000000000000000000000000000000000000000000000000000000000" + token.toString(16)).slice(-64);
+        var p = getProvider();
+        var callPromise;
+        if (p) {
+          callPromise = p.request({ method: "eth_call", params: [{ to: CONTRACT_ADDRESS, data: data }, "latest"] });
+        } else {
+          callPromise = fetch(BSC_RPCS[0], { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call", params: [{ to: CONTRACT_ADDRESS, data: data }, "latest"] }) })
+            .then(function (r) { return r.json(); }).then(function (j) { if (j.error) throw new Error(j.error.message); return j.result; });
+        }
+        marketStatus("Checking Cappybara #" + token + " on BNB Chain…", "");
+        callPromise.then(function (res) {
+          if (!res || res === "0x") throw new Error("empty");
+          var owner = "0x" + res.slice(-40).toLowerCase();
+          if (owner === account.toLowerCase()) {
+            marketStatus(t("marketOwned").split("{id}").join(token), "ok");
+          } else {
+            marketStatus(t("marketNotOwned").split("{addr}").join(shortAddr(account)).split("{id}").join(token), "err");
+          }
+        }).catch(function () { marketStatus(t("marketCheckFail"), "err"); });
+      }
+      (function initMarketTool() {
+        var tid = document.getElementById("marketTokenId");
+        var pr = document.getElementById("marketPrice");
+        var cb = document.getElementById("marketCheckBtn");
+        if (tid) tid.addEventListener("input", updateMarketLinks);
+        if (pr) pr.addEventListener("input", updateMarketLinks);
+        if (cb) cb.addEventListener("click", checkMarketOwnership);
+        updateMarketLinks();
+      })();
 
       /* ================= LANGUAGE SWITCH (EN / 中文） ================= */
       function applyLang(l) {
