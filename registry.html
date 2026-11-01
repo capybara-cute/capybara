@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Registry Klaim — Cappybara</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0a08;--panel:#17120f;--gold:#e6b64c;--text:#eee9df;--muted:#aaa397;--line:#43351d;--green:#9ce66b;--red:#ff9c8c}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,sans-serif}.wrap{width:min(820px,calc(100% - 32px));margin:42px auto}.card{background:var(--panel);border:1px solid var(--line);padding:22px;margin:18px 0;border-radius:8px}h1{color:var(--gold);line-height:1.2}h2{font-size:20px}p{color:var(--muted)}.btn{border:1px solid var(--gold);background:#261d12;color:var(--text);padding:12px 18px;border-radius:5px;font-weight:700;cursor:pointer;margin:6px 4px 6px 0}.btn:disabled{opacity:.45;cursor:not-allowed}input[type=text]{width:100%;background:#090807;border:1px solid var(--line);color:var(--text);font:inherit;padding:12px;border-radius:5px;margin:8px 0 14px}.status{padding:12px;border:1px solid var(--line);border-radius:5px;white-space:pre-wrap;overflow-wrap:anywhere;margin-top:12px}.warn{border-color:#80601e;color:#f2d899}.small{font-size:13px}code{overflow-wrap:anywhere;color:#f0d18a}label{font-weight:700;display:block}.ok{color:var(--green)}.error{color:var(--red)}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
+</head>
+<body><main class="wrap">
+<a href="index.html">← Kembali ke situs Cappybara</a>
+<h1>Admin registry minter CAPPY</h1>
+<p>Halaman ini mendaftarkan wallet minter pertama dari log mint NFT. Pengguna lain dapat membuka halaman ini, tetapi hanya alamat <code>owner</code> registry yang boleh mengirim pendaftaran. Setiap batch dikirim sebagai transaksi on-chain dan memerlukan tanda tangan wallet admin.</p>
+<div class="card warn"><b>Perhatian</b><p>Kontrak NFT lama tidak mendaftarkan minter secara otomatis. Audit setiap token ID dan alamat penerima mint dari event <code>Transfer</code> sebelum menandatangani. Pendaftaran yang salah dapat memberi hak klaim ke alamat yang keliru. Jangan masukkan seed phrase/private key.</p></div>
+<div class="card">
+  <h2>1. Hubungkan owner registry</h2>
+  <label for="contractAddress">Alamat kontrak registry yang sudah diverifikasi di BscScan</label>
+  <input id="contractAddress" type="text" placeholder="0x… alamat kontrak klaim yang sudah dideploy">
+  <button class="btn" id="connect">Hubungkan dan verifikasi</button>
+  <div id="walletStatus" class="status">Belum terhubung. Klaim registry belum dideploy, jadi alamat kontrak harus dimasukkan setelah deployment.</div>
+</div>
+<div class="card">
+  <h2>2. Muat file batch registry</h2>
+  <p>Gunakan file <code>minter-registry.json</code> yang dibuat oleh <code>scripts/build_minter_registry.py</code>. File harus berasal dari BNB Chain dan kontrak NFT Cappybara yang benar.</p>
+  <input id="manifest" type="file" accept="application/json,.json">
+  <div id="fileStatus" class="status">Belum ada file dimuat.</div>
+</div>
+<div class="card">
+  <h2>3. Tinjau dan daftar</h2>
+  <p>Semua batch maksimal 100 NFT. Periksa jumlah, rentang blok, token ID, alamat minter, dan hasil audit sebelum menekan tombol. Wallet akan meminta konfirmasi untuk setiap transaksi batch.</p>
+  <div id="preview" class="status">Menunggu kontrak owner dan file valid.</div>
+  <button class="btn" id="register" disabled>Daftarkan batch (minta tanda tangan wallet)</button>
+</div>
+<p class="small">Tool ini hanya menyiapkan dan mengirim transaksi yang Anda tinjau lalu setujui sendiri di wallet. Kontrak akan menolak pendaftaran ID yang sudah pernah dicatat. Jika sebagian batch sudah berhasil, buat ulang file hanya untuk rentang blok baru sebelum melanjutkan.</p>
+</main>
+<script>
+(() => {
+  const EXPECTED_TOKEN = "0x1129d5541475ab514dd3127654a9ff72c08645db";
+  const EXPECTED_NFT = "0xba33f7ff4134af69af19ecdf141221666b577c32";
+  const EXPECTED_TREASURY = "0xea92a9df3ad64b2de2e84ccb2cf96b216b06c9bb";
+  const ABI = [
+    "function owner() view returns (address)",
+    "function token() view returns (address)",
+    "function nft() view returns (address)",
+    "function treasury() view returns (address)",
+    "function registeredCount() view returns (uint256)",
+    "function originalMinterOf(uint256 tokenId) view returns (address)",
+    "function registerMinters(uint256[] tokenIds,address[] originalMinters)"
+  ];
+  let provider, signer, account, contract, manifest;
+  const $ = id => document.getElementById(id);
+  function text(id, value){ $(id).textContent = value; }
+  function providerObject(){ return window.okxwallet || window.ethereum || null; }
+  function addressEq(a,b){ return String(a).toLowerCase() === b.toLowerCase(); }
+
+  async function validateManifest(){
+    if (!manifest || !contract || !signer || !account) return false;
+    if (manifest.schema !== "cappybara-minter-registry-v1") throw new Error("Schema file tidak dikenali.");
+    if (Number(manifest.chainId) !== 56) throw new Error("File batch bukan untuk BNB Smart Chain (56).");
+    if (!addressEq(manifest.nftContract, EXPECTED_NFT)) throw new Error("Alamat kontrak NFT dalam file tidak cocok.");
+    if (!Array.isArray(manifest.registrationBatches) || manifest.registrationBatches.length === 0) throw new Error("File tidak memiliki registrationBatches.");
+    if (!Array.isArray(manifest.records)) throw new Error("File tidak memiliki records untuk audit.");
+    let total = 0; const seen = new Set();
+    for (const [i,b] of manifest.registrationBatches.entries()) {
+      if (!Array.isArray(b.tokenIds) || !Array.isArray(b.originalMinters) || b.tokenIds.length !== b.originalMinters.length || b.tokenIds.length === 0 || b.tokenIds.length > 100) throw new Error(`Batch ${i+1} tidak valid; maksimum 100 ID.`);
+      for (let j=0;j<b.tokenIds.length;j++) {
+        const id = String(b.tokenIds[j]);
+        if (!/^\d+$/.test(id) || !/^0x[0-9a-fA-F]{40}$/.test(b.originalMinters[j])) throw new Error(`Data ID/minter tidak valid di batch ${i+1}.`);
+        if (seen.has(id)) throw new Error(`Token ID #${id} muncul lebih dari sekali di file.`);
+        seen.add(id); total++;
+      }
+    }
+    if (total !== manifest.records.length || total !== Number(manifest.mintedNftCountInRange)) throw new Error("Jumlah batch tidak cocok dengan records atau mintedNftCountInRange.");
+    const flattened = manifest.registrationBatches.flatMap(b => b.tokenIds.map((id,i) => ({tokenId:String(id), originalMinter:String(b.originalMinters[i]).toLowerCase()})));
+    for (let i=0;i<flattened.length;i++) {
+      if (flattened[i].tokenId !== String(manifest.records[i].tokenId) || flattened[i].originalMinter !== String(manifest.records[i].originalMinter).toLowerCase()) throw new Error(`Batch ${i+1} tidak cocok dengan records audit.`);
+    }
+    const current = Number(await contract.registeredCount());
+    if (current + total > 10000) throw new Error(`Batas 10.000 NFT akan terlampaui (saat ini tercatat ${current}).`);
+    return true;
+  }
+
+  $("connect").onclick = async () => {
+    try {
+      const addr = $("contractAddress").value.trim();
+      if (!/^0x[0-9a-fA-F]{40}$/.test(addr)) throw new Error("Masukkan alamat registry yang sudah diverifikasi.");
+      const p = providerObject(); if (!p) throw new Error("Dompet EVM tidak ditemukan. Buka melalui browser dApp.");
+      provider = new ethers.BrowserProvider(p); await provider.send("eth_requestAccounts", []); signer = await provider.getSigner(); account = await signer.getAddress();
+      const network = await provider.getNetwork(); if (network.chainId !== 56n) throw new Error("Pindah wallet ke BNB Smart Chain (56).");
+      const code = await provider.getCode(addr); if (code === "0x") throw new Error("Alamat tersebut tidak memiliki bytecode kontrak di BNB Chain.");
+      contract = new ethers.Contract(addr, ABI, provider);
+      const [owner, token, nft, treasury, count] = await Promise.all([contract.owner(), contract.token(), contract.nft(), contract.treasury(), contract.registeredCount()]);
+      if (!addressEq(token,EXPECTED_TOKEN) || !addressEq(nft,EXPECTED_NFT) || !addressEq(treasury,EXPECTED_TREASURY)) throw new Error("Getter kontrak tidak cocok dengan token/NFT/treasury yang diharapkan. Jangan lanjut.");
+      if (!addressEq(owner,account)) throw new Error(`Wallet ${account} bukan owner registry (${owner}).`);
+      contract = contract.connect(signer);
+      text("walletStatus", `Terverifikasi di BNB Chain 56\nOwner wallet: ${account}\nAlamat registry: ${addr}\nNFT terdaftar saat ini: ${count}`);
+      await refreshPreview();
+    } catch(e) { text("walletStatus", e.shortMessage || e.message || String(e)); }
+  };
+
+  $("manifest").onchange = async e => {
+    try {
+      const f = e.target.files && e.target.files[0]; if (!f) return;
+      manifest = JSON.parse(await f.text());
+      text("fileStatus", `File dimuat: ${f.name}\nMint tercatat dalam rentang: ${manifest.mintedNftCountInRange}\nRentang blok: ${manifest.scanStartBlock}–${manifest.scanEndBlock}\nBatch: ${(manifest.registrationBatches||[]).length}`);
+      await refreshPreview();
+    } catch(err) { manifest=null; text("fileStatus", "File tidak valid: " + (err.message||err)); await refreshPreview(); }
+  };
+
+  async function refreshPreview(){
+    $("register").disabled = true;
+    if (!manifest || !contract) { text("preview", "Menunggu kontrak owner dan file valid."); return; }
+    try {
+      await validateManifest();
+      const total=manifest.registrationBatches.reduce((n,b)=>n+b.tokenIds.length,0);
+      const list=manifest.registrationBatches.slice(0,3).map((b,i)=>`Batch ${i+1}: ${b.tokenIds.length} ID (${b.tokenIds.slice(0,8).map(x=>'#'+x).join(', ')}${b.tokenIds.length>8?'…':''})`).join("\n");
+      text("preview", `Pemeriksaan lolos.\nNFT baru yang akan didaftarkan: ${total}\nBatch transaksi: ${manifest.registrationBatches.length}\nRentang blok: ${manifest.scanStartBlock}–${manifest.scanEndBlock}\n${list}\nPeriksa records di file JSON dan bandingkan dengan event mint sebelum menandatangani. Kontrak menolak ID yang sudah terdaftar; simulasi transaksi akan menggagalkan batch duplikat.`);
+      $("register").disabled = false;
+    } catch(e) { text("preview", "Tidak dapat mendaftar: " + (e.shortMessage || e.message || String(e))); }
+  }
+
+  $("register").onclick = async () => {
+    if (!manifest || !contract || !signer) return;
+    $("register").disabled = true;
+    try {
+      for (let i=0;i<manifest.registrationBatches.length;i++) {
+        const b=manifest.registrationBatches[i];
+        text("preview", `Batch ${i+1}/${manifest.registrationBatches.length}: ${b.tokenIds.length} NFT. Tinjau fungsi registerMinters di wallet, lalu setujui transaksi jika alamat dan jumlahnya benar.`);
+        const tx=await contract.registerMinters(b.tokenIds.map(x => BigInt(x)),b.originalMinters);
+        text("preview", `Batch ${i+1} dikirim: ${tx.hash}\nMenunggu konfirmasi…`);
+        await tx.wait();
+      }
+      const count=await contract.registeredCount();
+      text("preview", `Selesai. Semua batch terkonfirmasi. NFT terdaftar: ${count}. Simpan hash transaksi dan file sumber untuk audit.`);
+      text("walletStatus", "Pendaftaran selesai. Untuk mint berikutnya, buat file hanya dari rentang blok setelah scan terakhir.");
+    } catch(e) { text("preview", "Proses berhenti: " + (e.shortMessage || e.message || String(e)) + "\nJika batch sebelumnya sudah terkonfirmasi, jangan kirim ulang ID yang sama."); }
+    await refreshPreview();
+  };
+})();
+</script>
+</body></html>

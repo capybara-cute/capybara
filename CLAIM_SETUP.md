@@ -23,7 +23,7 @@ The public page `claim.html` uses the user's connected BNB Chain wallet and an N
    ```
 
 3. Audit the `records` and each batch's `tokenIds` / `originalMinters` against the NFT mint `Transfer` events in BscScan and preferably a second RPC. The `originalMinters` must be the `to` address in the mint event where `from` is the zero address—not current NFT owners.
-4. Submit each audited batch with the registry contract owner's wallet by calling `registerMinters(uint256[] tokenIds,address[] originalMinters)`. Keep batches at or below 100 IDs, as the script outputs. Verify `originalMinterOf(tokenId)` on-chain after registration.
+4. Submit each audited batch with the registry contract owner's wallet by calling `registerMinters(uint256[] tokenIds,address[] originalMinters)`. The admin page at `https://capyybara.fun/registry.html` validates the chain, contract's token/NFT/treasury addresses, and connected owner wallet before offering the signing action. Enter the verified registry address, connect the owner wallet, upload the audited JSON file, review the batch, and approve each wallet transaction only after checking it. Keep batches at or below 100 IDs, as the script outputs. Verify `originalMinterOf(tokenId)` on-chain after registration.
 5. For future mints, rerun the script beginning at **last scanned end block + 1**, audit only the new records, and register them. Do not include already-registered IDs; the contract rejects duplicates. Keep the last completed scan block and registration transaction hashes in project records.
 
 ## Deploy and fund
