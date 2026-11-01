@@ -65,10 +65,11 @@
   }
   $("connect").onclick = async () => {
     try {
-      if (!CLAIM_CONTRACT || !/^0x[0-9a-fA-F]{40}$/.test(CLAIM_CONTRACT)) throw new Error("Klaim belum dibuka: alamat kontrak belum dikonfigurasi setelah deployment.");
       const p = providerObject(); if (!p) throw new Error("Dompet EVM tidak ditemukan. Buka halaman melalui browser dApp.");
       provider = new ethers.BrowserProvider(p); await provider.send("eth_requestAccounts", []); signer = await provider.getSigner(); userAddress = await signer.getAddress();
-      const network = await provider.getNetwork(); if (network.chainId !== 56n) throw new Error("Pindah jaringan dompet ke BNB Smart Chain (56).");
+      const network = await provider.getNetwork();
+      if (network.chainId !== 56n) { status(`Dompet terhubung: ${userAddress}\nPindah jaringan ke BNB Smart Chain (56) untuk melanjutkan.`); return; }
+      if (!CLAIM_CONTRACT || !/^0x[0-9a-fA-F]{40}$/.test(CLAIM_CONTRACT)) { status(`Dompet BNB Chain terhubung: ${userAddress}\nKlaim belum dibuka: alamat kontrak klaim belum dikonfigurasi setelah deployment.`); return; }
       status(`Terhubung: ${userAddress}\nMemeriksa snapshot dan kelayakan…`); await loadEligible(); status(`Terhubung: ${userAddress}\nKelayakan diperiksa. Setiap klaim dikenai 0,0003 BNB.`);
     } catch(e) { status(e.shortMessage || e.message || String(e)); }
   };

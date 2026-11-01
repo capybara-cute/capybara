@@ -41,6 +41,6 @@ The deployer must then transfer enough CAPPY to the claim contract. Funding it w
 1. Put the audited `claim-snapshot.json` beside `claim.html` in the hosted site.
 2. Set `CLAIM_CONTRACT` near the top of the inline script in `claim.html` to the verified deployed address.
 3. Test with a test wallet/minter and verify: wrong wallet rejected, wrong proof rejected, duplicate claim rejected, exactly 0.0003 BNB reaches the treasury, and exactly 10,000 CAPPY reaches the original minter.
-4. Only after these checks, add a link to the claim page from `index.html` and publish the page/snapshot.
+4. The main site's `index.html` now links to `claim.html` with a clear coming-soon status. After these checks, configure the deployed contract and audited snapshot, then change the CTA/status from coming-soon to open and publish the snapshot.
 
 The site asks users to approve transactions in their own wallet; it never requests a seed phrase or private key.
