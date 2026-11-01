@@ -1,38 +1,39 @@
 <!doctype html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin Registry Klaim — Cappybara</title>
+<title>Claim Registry Admin — Cappybara</title>
 <style>
-:root{color-scheme:dark;--bg:#0b0a08;--panel:#17120f;--gold:#e6b64c;--text:#eee9df;--muted:#aaa397;--line:#43351d;--green:#9ce66b;--red:#ff9c8c}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,sans-serif}.wrap{width:min(820px,calc(100% - 32px));margin:42px auto}.card{background:var(--panel);border:1px solid var(--line);padding:22px;margin:18px 0;border-radius:8px}h1{color:var(--gold);line-height:1.2}h2{font-size:20px}p{color:var(--muted)}.btn{border:1px solid var(--gold);background:#261d12;color:var(--text);padding:12px 18px;border-radius:5px;font-weight:700;cursor:pointer;margin:6px 4px 6px 0}.btn:disabled{opacity:.45;cursor:not-allowed}input[type=text]{width:100%;background:#090807;border:1px solid var(--line);color:var(--text);font:inherit;padding:12px;border-radius:5px;margin:8px 0 14px}.status{padding:12px;border:1px solid var(--line);border-radius:5px;white-space:pre-wrap;overflow-wrap:anywhere;margin-top:12px}.warn{border-color:#80601e;color:#f2d899}.small{font-size:13px}code{overflow-wrap:anywhere;color:#f0d18a}label{font-weight:700;display:block}.ok{color:var(--green)}.error{color:var(--red)}
+:root{color-scheme:dark;--bg:#0b0a08;--panel:#17120f;--gold:#e6b64c;--text:#eee9df;--muted:#aaa397;--line:#43351d;--green:#9ce66b;--red:#ff9c8c}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,sans-serif}.wrap{width:min(820px,calc(100% - 32px));margin:42px auto}.card{background:var(--panel);border:1px solid var(--line);padding:22px;margin:18px 0;border-radius:8px}h1{color:var(--gold);line-height:1.2}h2{font-size:20px}p{color:var(--muted)}.btn{border:1px solid var(--gold);background:#261d12;color:var(--text);padding:12px 18px;border-radius:5px;font-weight:700;cursor:pointer;margin:6px 4px 6px 0}.btn:disabled{opacity:.45;cursor:not-allowed}input[type=text]{width:100%;background:#090807;border:1px solid var(--line);color:var(--text);font:inherit;padding:12px;border-radius:5px;margin:8px 0 14px}.status{padding:12px;border:1px solid var(--line);border-radius:5px;white-space:pre-wrap;overflow-wrap:anywhere;margin-top:12px}.warn{border-color:#80601e;color:#f2d899}.small{font-size:13px}code{overflow-wrap:anywhere;color:#f0d18a}label{font-weight:700;display:block}.ok{color:var(--green)}.error{color:var(--red)}.lang{display:flex;gap:8px;justify-content:flex-end;margin-bottom:16px}.lang .active{background:var(--gold);color:#17120f}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
 </head>
 <body><main class="wrap">
-<a href="index.html">← Kembali ke situs Cappybara</a>
-<h1>Admin registry minter CAPPY</h1>
-<p>Halaman ini mendaftarkan wallet minter pertama dari log mint NFT. Pengguna lain dapat membuka halaman ini, tetapi hanya alamat <code>owner</code> registry yang boleh mengirim pendaftaran. Setiap batch dikirim sebagai transaksi on-chain dan memerlukan tanda tangan wallet admin.</p>
-<div class="card warn"><b>Perhatian</b><p>Kontrak NFT lama tidak mendaftarkan minter secara otomatis. Audit setiap token ID dan alamat penerima mint dari event <code>Transfer</code> sebelum menandatangani. Pendaftaran yang salah dapat memberi hak klaim ke alamat yang keliru. Jangan masukkan seed phrase/private key.</p></div>
+<div class="lang"><button class="btn active" id="enBtn" type="button">English</button><button class="btn" id="zhBtn" type="button">中文</button></div>
+<a href="index.html" data-i18n="back">← Back to Cappybara website</a>
+<h1 data-i18n="title">CAPPY Minter Registry Admin</h1>
+<p data-i18n="intro">This page registers the original minter wallet from NFT mint logs. Anyone may open this page, but only the registry owner can submit registrations. Each batch is sent as an on-chain transaction and requires the admin wallet's signature.</p>
+<div class="card warn"><b data-i18n="warningTitle">Important warning</b><p data-i18n="warning">The existing NFT contract does not register minters automatically. Audit every token ID and the mint recipient from the <code>Transfer</code> event before signing. Incorrect registration may grant the claim to the wrong address. Never enter a seed phrase or private key.</p></div>
 <div class="card">
-  <h2>1. Hubungkan owner registry</h2>
-  <label for="contractAddress">Alamat kontrak registry yang sudah diverifikasi di BscScan</label>
-  <input id="contractAddress" type="text" placeholder="0x… alamat kontrak klaim yang sudah dideploy">
-  <button class="btn" id="connect">Hubungkan dan verifikasi</button>
-  <div id="walletStatus" class="status">Belum terhubung. Klaim registry belum dideploy, jadi alamat kontrak harus dimasukkan setelah deployment.</div>
+  <h2 data-i18n="step1">1. Connect the registry owner</h2>
+  <label for="contractAddress" data-i18n="contractLabel">Verified claim registry contract address on BscScan</label>
+  <input id="contractAddress" type="text" data-i18n-placeholder="contractPlaceholder" placeholder="0x... deployed claim registry address">
+  <button class="btn" id="connect" data-i18n="connect">Connect and verify</button>
+  <div id="walletStatus" class="status" data-i18n="walletInitial">Not connected. Deploy the claim registry first, then enter its verified contract address.</div>
 </div>
 <div class="card">
-  <h2>2. Muat file batch registry</h2>
-  <p>Gunakan file <code>minter-registry.json</code> yang dibuat oleh <code>scripts/build_minter_registry.py</code>. File harus berasal dari BNB Chain dan kontrak NFT Cappybara yang benar.</p>
+  <h2 data-i18n="step2">2. Load the registry batch file</h2>
+  <p data-i18n="manifestHelp">Use <code>minter-registry.json</code> generated by <code>scripts/build_minter_registry.py</code>. The file must come from BNB Chain and the correct Cappybara NFT contract.</p>
   <input id="manifest" type="file" accept="application/json,.json">
-  <div id="fileStatus" class="status">Belum ada file dimuat.</div>
+  <div id="fileStatus" class="status" data-i18n="fileInitial">No file loaded.</div>
 </div>
 <div class="card">
-  <h2>3. Tinjau dan daftar</h2>
-  <p>Semua batch maksimal 100 NFT. Periksa jumlah, rentang blok, token ID, alamat minter, dan hasil audit sebelum menekan tombol. Wallet akan meminta konfirmasi untuk setiap transaksi batch.</p>
-  <div id="preview" class="status">Menunggu kontrak owner dan file valid.</div>
-  <button class="btn" id="register" disabled>Daftarkan batch (minta tanda tangan wallet)</button>
+  <h2 data-i18n="step3">3. Review and register</h2>
+  <p data-i18n="reviewHelp">Each batch can contain up to 100 NFTs. Check the count, block range, token IDs, minter addresses, and audit results before signing.</p>
+  <div id="preview" class="status" data-i18n="previewInitial">Waiting for the verified owner wallet and a valid file.</div>
+  <button class="btn" id="register" disabled data-i18n="register">Register batches (request wallet signatures)</button>
 </div>
-<p class="small">Tool ini hanya menyiapkan dan mengirim transaksi yang Anda tinjau lalu setujui sendiri di wallet. Kontrak akan menolak pendaftaran ID yang sudah pernah dicatat. Jika sebagian batch sudah berhasil, buat ulang file hanya untuk rentang blok baru sebelum melanjutkan.</p>
+<p class="small" data-i18n="footer">This tool only prepares and sends transactions that you review and approve in your own wallet. The contract rejects already-registered IDs. If a batch has already succeeded, create a new file containing only the next block range.</p>
 </main>
 <script>
 (() => {
@@ -48,95 +49,49 @@
     "function originalMinterOf(uint256 tokenId) view returns (address)",
     "function registerMinters(uint256[] tokenIds,address[] originalMinters)"
   ];
-  let provider, signer, account, contract, manifest;
+  const T = {
+    en: {
+      back:"← Back to Cappybara website", title:"CAPPY Minter Registry Admin", intro:"This page registers the original minter wallet from NFT mint logs. Anyone may open this page, but only the registry owner can submit registrations. Each batch is sent as an on-chain transaction and requires the admin wallet's signature.", warningTitle:"Important warning", warning:"The existing NFT contract does not register minters automatically. Audit every token ID and the mint recipient from the Transfer event before signing. Incorrect registration may grant the claim to the wrong address. Never enter a seed phrase or private key.", step1:"1. Connect the registry owner", contractLabel:"Verified claim registry contract address on BscScan", contractPlaceholder:"0x... deployed claim registry address", connect:"Connect and verify", walletInitial:"Not connected. Deploy the claim registry first, then enter its verified contract address.", step2:"2. Load the registry batch file", manifestHelp:"Use minter-registry.json generated by scripts/build_minter_registry.py. The file must come from BNB Chain and the correct Cappybara NFT contract.", fileInitial:"No file loaded.", step3:"3. Review and register", reviewHelp:"Each batch can contain up to 100 NFTs. Check the count, block range, token IDs, minter addresses, and audit results before signing.", previewInitial:"Waiting for the verified owner wallet and a valid file.", register:"Register batches (request wallet signatures)", footer:"This tool only prepares and sends transactions that you review and approve in your own wallet. The contract rejects already-registered IDs. If a batch has already succeeded, create a new file containing only the next block range.", fileLoaded:(name,count,start,end,batches)=>`File loaded: ${name}\nMints in range: ${count}\nBlock range: ${start}–${end}\nBatches: ${batches}`, previewValid:(total,batches,start,list)=>`Validation passed.\nNFTs to register: ${total}\nTransactions: ${batches}\nBlock range: ${start}–${end}\n${list}\nReview every record in the JSON and compare it with the mint events before signing.`, batch:(i,total,count)=>`Batch ${i}/${total}: ${count} NFTs. Review the registerMinters call in your wallet before approving.`, sent:(i,total,hash)=>`Batch ${i}/${total} submitted: ${hash}\nWaiting for confirmation...`, done:(count)=>`Complete. All batches confirmed. Registered NFTs: ${count}.`, owner:(account,addr,count)=>`Verified on BNB Chain 56\nOwner wallet: ${account}\nRegistry address: ${addr}\nCurrently registered NFTs: ${count}`)
+    },
+    zh: {
+      back:"← 返回 Cappybara 网站", title:"CAPPY 铸造者登记管理", intro:"本页面根据 NFT 铸造日志登记首次铸造钱包。任何人都可以打开本页面，但只有 registry 所有者可以提交登记。每个批次都会发送链上交易，并需要管理员钱包签名。", warningTitle:"重要警告", warning:"现有 NFT 合约不会自动登记铸造者。签名之前，请根据 Transfer 事件审核每个 Token ID 和铸造接收地址。错误登记可能会把领取权授予错误地址。任何时候都不要输入助记词或私钥。", step1:"1. 连接 registry 所有者", contractLabel:"已在 BscScan 验证的领取 registry 合约地址", contractPlaceholder:"0x... 已部署的领取 registry 地址", connect:"连接并验证", walletInitial:"尚未连接。请先部署领取 registry，再输入已验证的合约地址。", step2:"2. 加载 registry 批次文件", manifestHelp:"使用 scripts/build_minter_registry.py 生成的 minter-registry.json。文件必须来自 BNB Chain，并对应正确的 Cappybara NFT 合约。", fileInitial:"尚未加载文件。", step3:"3. 审核并登记", reviewHelp:"每个批次最多包含 100 个 NFT。签名前请检查数量、区块范围、Token ID、铸造者地址和审核结果。", previewInitial:"等待已验证的所有者钱包和有效文件。", register:"登记批次（请求钱包签名）", footer:"此工具只会准备并发送由你在自己的钱包中审核和批准的交易。合约会拒绝已登记的 ID。如果某个批次已经成功，请创建只包含下一个区块范围的新文件。", fileLoaded:(name,count,start,end,batches)=>`文件已加载：${name}\n范围内铸造数：${count}\n区块范围：${start}–${end}\n批次：${batches}`, previewValid:(total,batches,start,list)=>`验证通过。\n待登记 NFT：${total}\n交易数量：${batches}\n区块范围：${start}–${end}\n${list}\n签名前，请审核 JSON 中的每条记录，并与铸造事件进行对比。`, batch:(i,total,count)=>`批次 ${i}/${total}：${count} 个 NFT。批准前请在钱包中审核 registerMinters 调用。`, sent:(i,total,hash)=>`批次 ${i}/${total} 已提交：${hash}\n等待确认……`, done:(count)=>`完成。所有批次已确认。已登记 NFT：${count}。`, owner:(account,addr,count)=>`已在 BNB Chain 56 验证\n所有者钱包：${account}\nRegistry 地址：${addr}\n当前已登记 NFT：${count}`)
+    }
+  };
+  let lang='en', provider, signer, account, contract, manifest;
   const $ = id => document.getElementById(id);
+  const tr = key => T[lang][key];
   function text(id, value){ $(id).textContent = value; }
-  function providerObject(){ return window.okxwallet || window.ethereum || null; }
   function addressEq(a,b){ return String(a).toLowerCase() === b.toLowerCase(); }
+  function applyLanguage(next){
+    lang=next; document.documentElement.lang=lang==='zh'?'zh':'en';
+    document.querySelectorAll('[data-i18n]').forEach(el => { const key=el.dataset.i18n; if (T[lang][key] && typeof T[lang][key] === 'string') el.textContent=T[lang][key]; });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => el.placeholder=T[lang][el.dataset.i18nPlaceholder]);
+    $('enBtn').classList.toggle('active',lang==='en'); $('zhBtn').classList.toggle('active',lang==='zh');
+    if (!manifest && !contract) text('preview',tr('previewInitial'));
+  }
+  $('enBtn').onclick=()=>applyLanguage('en'); $('zhBtn').onclick=()=>applyLanguage('zh');
 
   async function validateManifest(){
     if (!manifest || !contract || !signer || !account) return false;
-    if (manifest.schema !== "cappybara-minter-registry-v1") throw new Error("Schema file tidak dikenali.");
-    if (Number(manifest.chainId) !== 56) throw new Error("File batch bukan untuk BNB Smart Chain (56).");
-    if (!addressEq(manifest.nftContract, EXPECTED_NFT)) throw new Error("Alamat kontrak NFT dalam file tidak cocok.");
-    if (!Array.isArray(manifest.registrationBatches) || manifest.registrationBatches.length === 0) throw new Error("File tidak memiliki registrationBatches.");
-    if (!Array.isArray(manifest.records)) throw new Error("File tidak memiliki records untuk audit.");
-    let total = 0; const seen = new Set();
-    for (const [i,b] of manifest.registrationBatches.entries()) {
-      if (!Array.isArray(b.tokenIds) || !Array.isArray(b.originalMinters) || b.tokenIds.length !== b.originalMinters.length || b.tokenIds.length === 0 || b.tokenIds.length > 100) throw new Error(`Batch ${i+1} tidak valid; maksimum 100 ID.`);
-      for (let j=0;j<b.tokenIds.length;j++) {
-        const id = String(b.tokenIds[j]);
-        if (!/^\d+$/.test(id) || !/^0x[0-9a-fA-F]{40}$/.test(b.originalMinters[j])) throw new Error(`Data ID/minter tidak valid di batch ${i+1}.`);
-        if (seen.has(id)) throw new Error(`Token ID #${id} muncul lebih dari sekali di file.`);
-        seen.add(id); total++;
-      }
+    if (manifest.schema !== "cappybara-minter-registry-v1") throw new Error(lang==='zh'?"无法识别文件 schema。":"Unrecognized file schema.");
+    if (Number(manifest.chainId) !== 56) throw new Error(lang==='zh'?"文件不是 BNB Smart Chain (56) 数据。":"The file is not for BNB Smart Chain (56).");
+    if (!addressEq(manifest.nftContract, EXPECTED_NFT)) throw new Error(lang==='zh'?"文件中的 NFT 合约地址不匹配。":"The NFT contract address in the file does not match.");
+    if (!Array.isArray(manifest.registrationBatches) || manifest.registrationBatches.length===0) throw new Error(lang==='zh'?"文件没有 registrationBatches。":"The file has no registrationBatches.");
+    if (!Array.isArray(manifest.records)) throw new Error(lang==='zh'?"文件没有 records 审核数据。":"The file has no audit records.");
+    let total=0; const seen=new Set();
+    for(const [i,b] of manifest.registrationBatches.entries()){
+      if(!Array.isArray(b.tokenIds)||!Array.isArray(b.originalMinters)||b.tokenIds.length!==b.originalMinters.length||b.tokenIds.length===0||b.tokenIds.length>100) throw new Error(`${lang==='zh'?'批次':'Batch'} ${i+1} ${lang==='zh'?'无效；最多 100 个 ID。':'is invalid; maximum 100 IDs.'}`);
+      for(let j=0;j<b.tokenIds.length;j++){const id=String(b.tokenIds[j]);if(!/^\d+$/.test(id)||!/^0x[0-9a-fA-F]{40}$/.test(b.originalMinters[j])) throw new Error(`${lang==='zh'?'批次':'Batch'} ${i+1} ${lang==='zh'?'的 ID/铸造者地址无效。':'contains an invalid ID/minter address.'}`);if(seen.has(id)) throw new Error(`${lang==='zh'?'Token ID #':'Token ID #'}${id}${lang==='zh'?'重复出现。':' appears more than once.'}`);seen.add(id);total++;}
     }
-    if (total !== manifest.records.length || total !== Number(manifest.mintedNftCountInRange)) throw new Error("Jumlah batch tidak cocok dengan records atau mintedNftCountInRange.");
-    const flattened = manifest.registrationBatches.flatMap(b => b.tokenIds.map((id,i) => ({tokenId:String(id), originalMinter:String(b.originalMinters[i]).toLowerCase()})));
-    for (let i=0;i<flattened.length;i++) {
-      if (flattened[i].tokenId !== String(manifest.records[i].tokenId) || flattened[i].originalMinter !== String(manifest.records[i].originalMinter).toLowerCase()) throw new Error(`Batch ${i+1} tidak cocok dengan records audit.`);
-    }
-    const current = Number(await contract.registeredCount());
-    if (current + total > 10000) throw new Error(`Batas 10.000 NFT akan terlampaui (saat ini tercatat ${current}).`);
-    return true;
+    if(total!==manifest.records.length||total!==Number(manifest.mintedNftCountInRange)) throw new Error(lang==='zh'?"批次数量与 records 或 mintedNftCountInRange 不匹配。":"Batch count does not match records or mintedNftCountInRange.");
+    const flattened=manifest.registrationBatches.flatMap(b=>b.tokenIds.map((id,i)=>({tokenId:String(id),originalMinter:String(b.originalMinters[i]).toLowerCase()})));
+    for(let i=0;i<flattened.length;i++) if(flattened[i].tokenId!==String(manifest.records[i].tokenId)||flattened[i].originalMinter!==String(manifest.records[i].originalMinter).toLowerCase()) throw new Error(`${lang==='zh'?'批次':'Batch'} ${i+1} ${lang==='zh'?'与审核 records 不匹配。':'does not match the audit records.'}`);
+    const current=Number(await contract.registeredCount()); if(current+total>10000) throw new Error(`${lang==='zh'?'将超过 10,000 NFT 上限（当前已登记 ':'The 10,000 NFT limit would be exceeded (currently '}${current}${lang==='zh'?'）。':' registered).'}); return true;
   }
-
-  $("connect").onclick = async () => {
-    try {
-      const addr = $("contractAddress").value.trim();
-      if (!/^0x[0-9a-fA-F]{40}$/.test(addr)) throw new Error("Masukkan alamat registry yang sudah diverifikasi.");
-      const p = providerObject(); if (!p) throw new Error("Dompet EVM tidak ditemukan. Buka melalui browser dApp.");
-      provider = new ethers.BrowserProvider(p); await provider.send("eth_requestAccounts", []); signer = await provider.getSigner(); account = await signer.getAddress();
-      const network = await provider.getNetwork(); if (network.chainId !== 56n) throw new Error("Pindah wallet ke BNB Smart Chain (56).");
-      const code = await provider.getCode(addr); if (code === "0x") throw new Error("Alamat tersebut tidak memiliki bytecode kontrak di BNB Chain.");
-      contract = new ethers.Contract(addr, ABI, provider);
-      const [owner, token, nft, treasury, count] = await Promise.all([contract.owner(), contract.token(), contract.nft(), contract.treasury(), contract.registeredCount()]);
-      if (!addressEq(token,EXPECTED_TOKEN) || !addressEq(nft,EXPECTED_NFT) || !addressEq(treasury,EXPECTED_TREASURY)) throw new Error("Getter kontrak tidak cocok dengan token/NFT/treasury yang diharapkan. Jangan lanjut.");
-      if (!addressEq(owner,account)) throw new Error(`Wallet ${account} bukan owner registry (${owner}).`);
-      contract = contract.connect(signer);
-      text("walletStatus", `Terverifikasi di BNB Chain 56\nOwner wallet: ${account}\nAlamat registry: ${addr}\nNFT terdaftar saat ini: ${count}`);
-      await refreshPreview();
-    } catch(e) { text("walletStatus", e.shortMessage || e.message || String(e)); }
-  };
-
-  $("manifest").onchange = async e => {
-    try {
-      const f = e.target.files && e.target.files[0]; if (!f) return;
-      manifest = JSON.parse(await f.text());
-      text("fileStatus", `File dimuat: ${f.name}\nMint tercatat dalam rentang: ${manifest.mintedNftCountInRange}\nRentang blok: ${manifest.scanStartBlock}–${manifest.scanEndBlock}\nBatch: ${(manifest.registrationBatches||[]).length}`);
-      await refreshPreview();
-    } catch(err) { manifest=null; text("fileStatus", "File tidak valid: " + (err.message||err)); await refreshPreview(); }
-  };
-
-  async function refreshPreview(){
-    $("register").disabled = true;
-    if (!manifest || !contract) { text("preview", "Menunggu kontrak owner dan file valid."); return; }
-    try {
-      await validateManifest();
-      const total=manifest.registrationBatches.reduce((n,b)=>n+b.tokenIds.length,0);
-      const list=manifest.registrationBatches.slice(0,3).map((b,i)=>`Batch ${i+1}: ${b.tokenIds.length} ID (${b.tokenIds.slice(0,8).map(x=>'#'+x).join(', ')}${b.tokenIds.length>8?'…':''})`).join("\n");
-      text("preview", `Pemeriksaan lolos.\nNFT baru yang akan didaftarkan: ${total}\nBatch transaksi: ${manifest.registrationBatches.length}\nRentang blok: ${manifest.scanStartBlock}–${manifest.scanEndBlock}\n${list}\nPeriksa records di file JSON dan bandingkan dengan event mint sebelum menandatangani. Kontrak menolak ID yang sudah terdaftar; simulasi transaksi akan menggagalkan batch duplikat.`);
-      $("register").disabled = false;
-    } catch(e) { text("preview", "Tidak dapat mendaftar: " + (e.shortMessage || e.message || String(e))); }
-  }
-
-  $("register").onclick = async () => {
-    if (!manifest || !contract || !signer) return;
-    $("register").disabled = true;
-    try {
-      for (let i=0;i<manifest.registrationBatches.length;i++) {
-        const b=manifest.registrationBatches[i];
-        text("preview", `Batch ${i+1}/${manifest.registrationBatches.length}: ${b.tokenIds.length} NFT. Tinjau fungsi registerMinters di wallet, lalu setujui transaksi jika alamat dan jumlahnya benar.`);
-        const tx=await contract.registerMinters(b.tokenIds.map(x => BigInt(x)),b.originalMinters);
-        text("preview", `Batch ${i+1} dikirim: ${tx.hash}\nMenunggu konfirmasi…`);
-        await tx.wait();
-      }
-      const count=await contract.registeredCount();
-      text("preview", `Selesai. Semua batch terkonfirmasi. NFT terdaftar: ${count}. Simpan hash transaksi dan file sumber untuk audit.`);
-      text("walletStatus", "Pendaftaran selesai. Untuk mint berikutnya, buat file hanya dari rentang blok setelah scan terakhir.");
-    } catch(e) { text("preview", "Proses berhenti: " + (e.shortMessage || e.message || String(e)) + "\nJika batch sebelumnya sudah terkonfirmasi, jangan kirim ulang ID yang sama."); }
-    await refreshPreview();
-  };
+  $('connect').onclick=async()=>{try{const addr=$('contractAddress').value.trim();if(!/^0x[0-9a-fA-F]{40}$/.test(addr))throw new Error(lang==='zh'?"请输入已验证的 registry 地址。":"Enter a verified registry address.");const p=window.okxwallet||window.ethereum||null;if(!p)throw new Error(lang==='zh'?"未找到 EVM 钱包。请通过 dApp 浏览器打开。":"No EVM wallet found. Open this page in a dApp browser.");provider=new ethers.BrowserProvider(p);await provider.send('eth_requestAccounts',[]);signer=await provider.getSigner();account=await signer.getAddress();const network=await provider.getNetwork();if(network.chainId!==56n)throw new Error(lang==='zh'?"请将钱包切换到 BNB Smart Chain (56)。":"Switch the wallet to BNB Smart Chain (56).");const code=await provider.getCode(addr);if(code==='0x')throw new Error(lang==='zh'?"该地址在 BNB Chain 没有合约字节码。":"This address has no contract bytecode on BNB Chain.");contract=new ethers.Contract(addr,ABI,provider);const [owner,token,nft,treasury,count]=await Promise.all([contract.owner(),contract.token(),contract.nft(),contract.treasury(),contract.registeredCount()]);if(!addressEq(token,EXPECTED_TOKEN)||!addressEq(nft,EXPECTED_NFT)||!addressEq(treasury,EXPECTED_TREASURY))throw new Error(lang==='zh'?"合约的 Token/NFT/Treasury 地址不匹配预期。请勿继续。":"The contract Token/NFT/Treasury addresses do not match the expected values. Do not continue.");if(!addressEq(owner,account))throw new Error(`${lang==='zh'?'当前钱包':'Wallet'} ${account} ${lang==='zh'?'不是 registry 所有者':'is not the registry owner'} (${owner}).`);contract=contract.connect(signer);text('walletStatus',tr('owner')(account,addr,count));await refreshPreview();}catch(e){text('walletStatus',e.shortMessage||e.message||String(e));}};
+  $('manifest').onchange=async e=>{try{const f=e.target.files&&e.target.files[0];if(!f)return;manifest=JSON.parse(await f.text());text('fileStatus',tr('fileLoaded')(f.name,manifest.mintedNftCountInRange,manifest.scanStartBlock,manifest.scanEndBlock,(manifest.registrationBatches||[]).length));await refreshPreview();}catch(err){manifest=null;text('fileStatus',(lang==='zh'?'文件无效：':'Invalid file: ')+(err.message||err));await refreshPreview();}};
+  async function refreshPreview(){$('register').disabled=true;if(!manifest||!contract){text('preview',tr('previewInitial'));return;}try{await validateManifest();const total=manifest.registrationBatches.reduce((n,b)=>n+b.tokenIds.length,0);const list=manifest.registrationBatches.slice(0,3).map((b,i)=>`${lang==='zh'?'批次':'Batch'} ${i+1}: ${b.tokenIds.length} ${lang==='zh'?'个 ID':'IDs'} (${b.tokenIds.slice(0,8).map(x=>'#'+x).join(', ')}${b.tokenIds.length>8?'…':''})`).join('\n');text('preview',tr('previewValid')(total,manifest.registrationBatches.length,manifest.scanStartBlock+`–${manifest.scanEndBlock}`,list));$('register').disabled=false;}catch(e){text('preview',(lang==='zh'?'无法登记：':'Cannot register: ')+(e.shortMessage||e.message||String(e)));}}
+  $('register').onclick=async()=>{if(!manifest||!contract||!signer)return;$('register').disabled=true;try{for(let i=0;i<manifest.registrationBatches.length;i++){const b=manifest.registrationBatches[i];text('preview',tr('batch')(i+1,manifest.registrationBatches.length,b.tokenIds.length));const tx=await contract.registerMinters(b.tokenIds.map(x=>BigInt(x)),b.originalMinters);text('preview',tr('sent')(i+1,manifest.registrationBatches.length,tx.hash));await tx.wait();}const count=await contract.registeredCount();text('preview',tr('done')(count));text('walletStatus',lang==='zh'?'登记完成。对于新铸造，请从上次扫描结束区块之后建立新文件。':'Registration complete. For new mints, create a file from the block after the last scan.');}catch(e){text('preview',(lang==='zh'?'流程已停止：':'Process stopped: ')+(e.shortMessage||e.message||String(e))+`\n${lang==='zh'?'如果之前的批次已确认，请勿重复发送相同 ID。':'If a previous batch was confirmed, do not resend the same IDs.'}`);}await refreshPreview();};
 })();
 </script>
 </body></html>
