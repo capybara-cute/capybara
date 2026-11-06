@@ -29,7 +29,10 @@
 </div>
 <div class="card">
   <h2>Claim with an AI agent</h2>
-  <p>No NFT ID? Copy the prompt below, paste your wallet address in it, and send it to your AI agent — the agent finds your NFTs and claims each unclaimed one. If you connect your wallet above, the prompt fills in automatically.</p>
+  <p>Paste your wallet address below — the prompt fills in automatically — then copy it and send it to your AI agent. The agent finds your NFTs and claims each unclaimed one. If you connect your wallet above, the prompt fills in automatically too.</p>
+  <label for="walletPaste">Your wallet address — paste it here</label>
+  <input id="walletPaste" type="text" autocomplete="off" spellcheck="false" placeholder="0x… paste your BNB Chain wallet address">
+  <div id="pasteStatus" class="small" style="margin-bottom:12px">Paste your wallet address and the prompt fills in automatically — then click Copy prompt.</div>
   <pre id="promptClaim">Claim all my CAPPY on BNB Chain (chain ID 56).
 Claim contract: 0x76e51323fda5e584a673c78964380cf5bdcb5aaf
 My wallet: [PASTE YOUR WALLET ADDRESS]
@@ -54,7 +57,15 @@ Find my Cappybara NFT IDs from my wallet, skip ones already claimed, and claim e
   let provider, signer, account, contract, nftContract, eligibleId;
   const $ = id => document.getElementById(id);
   const CLAIM_PROMPT = "Claim all my CAPPY on BNB Chain (chain ID 56).\nClaim contract: 0x76e51323fda5e584a673c78964380cf5bdcb5aaf\nMy wallet: [PASTE YOUR WALLET ADDRESS]\nFind my Cappybara NFT IDs from my wallet, skip ones already claimed, and claim each unclaimed NFT with claim(uint256 tokenId). Value: 0.00022 BNB per NFT. Show me the details first and wait for my approval in the wallet before sending. Never ask for my seed phrase or private key.";
-  function renderClaimPrompt(){ $("promptClaim").textContent = CLAIM_PROMPT.split("[PASTE YOUR WALLET ADDRESS]").join(account || "[PASTE YOUR WALLET ADDRESS]"); }
+  function renderClaimPrompt(){
+    var pasted = ($("walletPaste").value || "").trim();
+    var valid = /^0x[0-9a-fA-F]{40}$/.test(pasted);
+    var who = valid ? pasted : (account || "[PASTE YOUR WALLET ADDRESS]");
+    $("promptClaim").textContent = CLAIM_PROMPT.split("[PASTE YOUR WALLET ADDRESS]").join(who);
+    var st = $("pasteStatus");
+    if (st) st.textContent = valid ? "Wallet address filled into the prompt — now just copy it." : (account ? "Wallet filled from your connected wallet — now just copy the prompt." : "Paste your wallet address and the prompt fills in automatically — then click Copy prompt.");
+  }
+  $("walletPaste").addEventListener("input", renderClaimPrompt);
   $("copyPrompt").onclick = async () => {
     try { await navigator.clipboard.writeText($("promptClaim").textContent); }
     catch(e) { const ta = document.createElement("textarea"); ta.value = $("promptClaim").textContent; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); }
