@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CAPPY Claim — Cappybara</title>
 <style>
-:root{color-scheme:dark;--bg:#0b0a08;--panel:#17120f;--gold:#e6b64c;--text:#eee9df;--muted:#aaa397;--line:#43351d;--green:#9ce66b}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,sans-serif}.wrap{width:min(760px,calc(100% - 32px));margin:48px auto}.card{background:var(--panel);border:1px solid var(--line);padding:24px;margin:18px 0;border-radius:8px}h1,h2{line-height:1.2}h1{color:var(--gold)}p{color:var(--muted)}.btn{border:1px solid var(--gold);background:#261d12;color:var(--text);padding:12px 18px;border-radius:5px;font-weight:700;cursor:pointer}.btn:disabled{opacity:.45;cursor:not-allowed}input{width:100%;background:#090807;border:1px solid var(--line);color:var(--text);font:inherit;padding:12px;border-radius:5px;margin:8px 0 14px}.status{padding:12px;border:1px solid var(--line);border-radius:5px;white-space:pre-wrap;overflow-wrap:anywhere}.small{font-size:13px}a{color:var(--gold)}label{font-weight:700;display:block}
+:root{color-scheme:dark;--bg:#0b0a08;--panel:#17120f;--gold:#e6b64c;--text:#eee9df;--muted:#aaa397;--line:#43351d;--green:#9ce66b}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,sans-serif}.wrap{width:min(760px,calc(100% - 32px));margin:48px auto}.card{background:var(--panel);border:1px solid var(--line);padding:24px;margin:18px 0;border-radius:8px}h1,h2{line-height:1.2}h1{color:var(--gold)}p{color:var(--muted)}.btn{border:1px solid var(--gold);background:#261d12;color:var(--text);padding:12px 18px;border-radius:5px;font-weight:700;cursor:pointer}.btn:disabled{opacity:.45;cursor:not-allowed}input{width:100%;background:#090807;border:1px solid var(--line);color:var(--text);font:inherit;padding:12px;border-radius:5px;margin:8px 0 14px}.status{padding:12px;border:1px solid var(--line);border-radius:5px;white-space:pre-wrap;overflow-wrap:anywhere}.small{font-size:13px}a{color:var(--gold)}label{font-weight:700;display:block}pre{white-space:pre-wrap;word-break:break-word;background:#090807;border:1px solid var(--line);padding:12px;border-radius:5px;font-size:13px;color:var(--text)}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
 </head>
@@ -27,6 +27,15 @@
   <div id="result" class="status" style="margin-top:14px">Connect your wallet and enter an NFT ID.</div>
   <button class="btn" id="claim" style="margin-top:14px" disabled>Claim CAPPY</button>
 </div>
+<div class="card">
+  <h2>Claim with an AI agent</h2>
+  <p>No NFT ID? Copy the prompt below, paste your wallet address in it, and send it to your AI agent — the agent finds your NFTs and claims each unclaimed one. If you connect your wallet above, the prompt fills in automatically.</p>
+  <pre id="promptClaim">Claim all my CAPPY on BNB Chain (chain ID 56).
+Claim contract: 0x76e51323fda5e584a673c78964380cf5bdcb5aaf
+My wallet: [PASTE YOUR WALLET ADDRESS]
+Find my Cappybara NFT IDs from my wallet, skip ones already claimed, and claim each unclaimed NFT with claim(uint256 tokenId). Value: 0.00022 BNB per NFT. Show me the details first and wait for my approval in the wallet before sending. Never ask for my seed phrase or private key.</pre>
+  <button class="btn" id="copyPrompt" style="margin-top:12px">Copy prompt</button>
+</div>
 <p class="small">This site will never ask for your seed phrase or private key. A claim requires your approval in your wallet.</p>
 </main>
 <script>
@@ -44,6 +53,14 @@
   const NFT_ABI = ["function ownerOf(uint256 tokenId) view returns (address)"];
   let provider, signer, account, contract, nftContract, eligibleId;
   const $ = id => document.getElementById(id);
+  const CLAIM_PROMPT = "Claim all my CAPPY on BNB Chain (chain ID 56).\nClaim contract: 0x76e51323fda5e584a673c78964380cf5bdcb5aaf\nMy wallet: [PASTE YOUR WALLET ADDRESS]\nFind my Cappybara NFT IDs from my wallet, skip ones already claimed, and claim each unclaimed NFT with claim(uint256 tokenId). Value: 0.00022 BNB per NFT. Show me the details first and wait for my approval in the wallet before sending. Never ask for my seed phrase or private key.";
+  function renderClaimPrompt(){ $("promptClaim").textContent = CLAIM_PROMPT.split("[PASTE YOUR WALLET ADDRESS]").join(account || "[PASTE YOUR WALLET ADDRESS]"); }
+  $("copyPrompt").onclick = async () => {
+    try { await navigator.clipboard.writeText($("promptClaim").textContent); }
+    catch(e) { const ta = document.createElement("textarea"); ta.value = $("promptClaim").textContent; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); }
+    $("copyPrompt").textContent = "Copied"; setTimeout(() => { $("copyPrompt").textContent = "Copy prompt"; }, 1800);
+  };
+  renderClaimPrompt();
   function setStatus(id, text){ $(id).textContent = text; }
   function providerObject(){ return window.okxwallet || window.ethereum || null; }
   function configured(){ return /^0x[0-9a-fA-F]{40}$/.test(CLAIM_CONTRACT); }
@@ -70,6 +87,7 @@
       const alreadyClaimed = await contract.claimedCount();
       setStatus("walletStatus", `Wallet connected to BNB Chain: ${account}\nClaim contract active: ${alreadyClaimed} claims completed.`);
       $("check").disabled = false;
+      renderClaimPrompt();
     } catch(e) {
       setStatus("walletStatus", e.shortMessage || e.message || String(e));
     }
