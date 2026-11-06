@@ -453,7 +453,7 @@
               <span class="live-dot" id="liveDot"></span>
               <span class="live-label" data-i18n="liveLabel">LIVE ON-CHAIN</span>
               <span class="spacer"></span>
-              <span class="live-status" id="liveStatus">Live read unavailable — showing the starting allocation</span>
+              <span class="live-status" id="liveStatus">Live read unavailable — showing last checked numbers (6 Nov 2026)</span>
               <button type="button" class="live-refresh" id="liveRefreshBtn" data-i18n="liveRefresh">Refresh</button>
             </div>
             <div class="live-grid">
@@ -848,7 +848,7 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
           liveRemainingLine: "Remaining: Free {y} / 5,000 • Paid {z} / 5,000",
           liveHero: "Minted {x} / 10,000 — Free left {y} • Paid left {z}",
           liveLive: "Live from the contract on BNB Chain",
-          liveFallback: "Live read unavailable — showing the starting allocation",
+          liveFallback: "Live read unavailable — showing last checked numbers (6 Nov 2026)",
           liveRefresh: "Refresh",
           allocLeft: "{x} left / 5,000"
         },
@@ -972,7 +972,7 @@ faqKicker: "常见问题", faqH2: "常见问题解答",
           liveRemainingLine: "剩余：免费 {y} / 5,000 • 付费 {z} / 5,000",
           liveHero: "已铸造 {x} / 10,000 — 免费剩余 {y} • 付费剩余 {z}",
           liveLive: "来自 BNB 链上合约的实时数据",
-          liveFallback: "实时读取不可用 — 显示初始分配",
+          liveFallback: "实时读取不可用 — 显示上次核对的数据（2026年11月6日）",
           liveRefresh: "刷新",
           allocLeft: "剩余 {x} / 5,000"
         }
@@ -1591,9 +1591,10 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
       /* ================= LIVE SUPPLY — ON-CHAIN READS =================
          Reads totalSupply() / freeRemaining() / paidRemaining() from the
          Cappybara contract: via the connected wallet provider when one is
-         present, otherwise via public BSC RPC endpoints. Any failure keeps
-         the static starting allocation (0 minted, 5,000 / 5,000 remaining)
-         and never blocks minting. */
+         present, otherwise via public BSC RPC endpoints. Each value is read
+         independently across several RPCs, so one rate-limited endpoint no
+         longer kills the whole board. Any failure keeps the last checked
+         snapshot (1,505 minted) and never blocks minting. */
       var SEL_TOTAL_SUPPLY = "0x18160ddd";   /* totalSupply() */
       var SEL_FREE_REMAINING = "0x5a781a6b"; /* freeRemaining() */
       var SEL_PAID_REMAINING = "0x9a90574b"; /* paidRemaining() */
@@ -1601,9 +1602,14 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
         "https://bsc-dataseed.binance.org",
         "https://bsc-dataseed1.binance.org",
         "https://bsc-dataseed2.binance.org",
-        "https://bsc.publicnode.com"
+        "https://bsc-dataseed1.defibit.io",
+        "https://bsc-dataseed2.bnbchain.org",
+        "https://bsc.publicnode.com",
+        "https://bsc-mainnet.public.blastapi.io"
       ];
-      var liveState = { minted: 0, free: 5000, paid: 5000, live: false };
+      /* Fallback snapshot: last on-chain check 6 Nov 2026 (minted 1,505, free 3,501, paid 4,994).
+         Shown only while every RPC fails; replaced by live values as soon as any read succeeds. */
+      var liveState = { minted: 1505, free: 3501, paid: 4994, live: false };
       function fmtNum(n) { return Number(n).toLocaleString("en-US"); }
       function renderLive() {
         var m = fmtNum(liveState.minted), f = fmtNum(liveState.free), p = fmtNum(liveState.paid);
@@ -1644,11 +1650,29 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
         if (!isFinite(n) || n < 0 || n > 10000) throw new Error("out of range");
         return n;
       }
-      function readAll(callFn) {
-        return Promise.all([callFn(SEL_TOTAL_SUPPLY), callFn(SEL_FREE_REMAINING), callFn(SEL_PAID_REMAINING)])
-          .then(function (r) {
-            return { minted: parseUint256(r[0]), free: parseUint256(r[1]), paid: parseUint256(r[2]) };
-          });
+      /* Read one value, trying each RPC in turn: public BSC endpoints often
+         403/rate-limit a single call, so one failed call must not kill the
+         whole board (the old code used Promise.all on a single RPC). */
+      function readValue(selector) {
+        var chain = Promise.reject(new Error("no RPC"));
+        BSC_RPCS.forEach(function (url) {
+          chain = chain.catch(function () { return rpcEthCall(url, selector); });
+        });
+        return chain.then(parseUint256);
+      }
+      function readAll() {
+        return Promise.all([
+          readValue(SEL_TOTAL_SUPPLY),
+          readValue(SEL_FREE_REMAINING).catch(function () { return null; }),
+          readValue(SEL_PAID_REMAINING).catch(function () { return null; })
+        ]).then(function (r) {
+          var minted = r[0];
+          /* If a remaining-count read failed, derive it from totalSupply:
+             free mints are IDs 1-5,000, paid mints IDs 5,001-10,000. */
+          var free = r[1] === null ? Math.max(0, 5000 - Math.min(minted, 5000)) : r[1];
+          var paid = r[2] === null ? Math.max(0, 5000 - Math.max(0, minted - 5000)) : r[2];
+          return { minted: minted, free: free, paid: paid };
+        });
       }
       function applyLiveValues(v) {
         liveState.minted = v.minted;
@@ -1673,25 +1697,24 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
           return j.result;
         });
       }
-      function tryRpcAt(i) {
-        if (i >= BSC_RPCS.length) {
-          liveState.live = false;
-          renderLive();
-          return;
-        }
-        readAll(function (data) { return rpcEthCall(BSC_RPCS[i], data); })
-          .then(applyLiveValues)
-          .catch(function () { tryRpcAt(i + 1); });
-      }
       function refreshLiveSupply() {
         var p = getProvider();
-        if (p) {
-          readAll(function (data) {
-            return p.request({ method: "eth_call", params: [{ to: CONTRACT_ADDRESS, data: data }, "latest"] });
-          }).then(applyLiveValues).catch(function () { tryRpcAt(0); });
-        } else {
-          tryRpcAt(0);
+        var viaWallet = p ? readAllWallet(p) : Promise.reject(new Error("no wallet"));
+        viaWallet.then(applyLiveValues).catch(function () {
+          readAll().then(applyLiveValues).catch(function () {
+            liveState.live = false;
+            renderLive();
+          });
+        });
+      }
+      function readAllWallet(p) {
+        function callFn(data) {
+          return p.request({ method: "eth_call", params: [{ to: CONTRACT_ADDRESS, data: data }, "latest"] });
         }
+        return Promise.all([callFn(SEL_TOTAL_SUPPLY), callFn(SEL_FREE_REMAINING), callFn(SEL_PAID_REMAINING)])
+          .then(function (r) {
+            return { minted: parseUint256(r[0]), free: parseUint256(r[1]), paid: parseUint256(r[2]) };
+          });
       }
       var liveRefreshBtn = document.getElementById("liveRefreshBtn");
       if (liveRefreshBtn) liveRefreshBtn.addEventListener("click", refreshLiveSupply);
