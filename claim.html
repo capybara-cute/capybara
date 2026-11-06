@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CAPPY Claim — Cappybara</title>
 <style>
-:root{color-scheme:dark;--bg:#0b0a08;--panel:#17120f;--gold:#e6b64c;--text:#eee9df;--muted:#aaa397;--line:#43351d;--green:#9ce66b}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,sans-serif}.wrap{width:min(760px,calc(100% - 32px));margin:48px auto}.card{background:var(--panel);border:1px solid var(--line);padding:24px;margin:18px 0;border-radius:8px}h1,h2{line-height:1.2}h1{color:var(--gold)}p{color:var(--muted)}.btn{border:1px solid var(--gold);background:#261d12;color:var(--text);padding:12px 18px;border-radius:5px;font-weight:700;cursor:pointer}.btn:disabled{opacity:.45;cursor:not-allowed}input{width:100%;background:#090807;border:1px solid var(--line);color:var(--text);font:inherit;padding:12px;border-radius:5px;margin:8px 0 14px}.status{padding:12px;border:1px solid var(--line);border-radius:5px;white-space:pre-wrap;overflow-wrap:anywhere}.small{font-size:13px}a{color:var(--gold)}label{font-weight:700;display:block}pre{white-space:pre-wrap;word-break:break-word;background:#090807;border:1px solid var(--line);padding:12px;border-radius:5px;font-size:13px;color:var(--text)}
+:root{color-scheme:dark;--bg:#0b0a08;--panel:#17120f;--gold:#e6b64c;--text:#eee9df;--muted:#aaa397;--line:#43351d;--green:#9ce66b}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,sans-serif}.wrap{width:min(760px,calc(100% - 32px));margin:48px auto}.card{background:var(--panel);border:1px solid var(--line);padding:24px;margin:18px 0;border-radius:8px}h1,h2{line-height:1.2}h1{color:var(--gold)}p{color:var(--muted)}.btn{border:1px solid var(--gold);background:#261d12;color:var(--text);padding:12px 18px;border-radius:5px;font-weight:700;cursor:pointer}.btn:disabled{opacity:.45;cursor:not-allowed}input{width:100%;background:#090807;border:1px solid var(--line);color:var(--text);font:inherit;padding:12px;border-radius:5px;margin:8px 0 14px}.status{padding:12px;border:1px solid var(--line);border-radius:5px;white-space:pre-wrap;overflow-wrap:anywhere}.small{font-size:13px}a{color:var(--gold)}label{font-weight:700;display:block}.stat-row{display:flex;gap:12px;flex-wrap:wrap}.stat{flex:1;min-width:120px;background:#090807;border:1px solid var(--line);padding:12px;border-radius:5px}.stat b{display:block;font-size:20px;color:var(--green)}.stat span{font-size:13px;color:var(--muted)}.livedot{color:var(--green)}pre{white-space:pre-wrap;word-break:break-word;background:#090807;border:1px solid var(--line);padding:12px;border-radius:5px;font-size:13px;color:var(--text)}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
 </head>
@@ -18,6 +18,16 @@
   <p>Network: BNB Smart Chain (56). Any holder can claim as soon as the claim contract is deployed and funded — no registration needed.</p>
   <button class="btn" id="connect">Connect Wallet</button>
   <div id="walletStatus" class="status" style="margin-top:14px">Not connected.</div>
+</div>
+<div class="card">
+  <h2>Live claim stats <span class="livedot" id="claimLiveDot">● LIVE</span></h2>
+  <div class="stat-row">
+    <div class="stat"><b id="statCount">1</b><span>Claims completed</span></div>
+    <div class="stat"><b id="statClaimed">2,000</b><span>CAPPY claimed</span></div>
+    <div class="stat"><b id="statLeft">3,040,000</b><span>CAPPY left in contract</span></div>
+  </div>
+  <p id="claimStatsStatus" style="margin-top:12px">Loading live stats from BNB Chain…</p>
+  <button class="btn" id="refreshStats">Refresh</button>
 </div>
 <div class="card">
   <h2>Check NFT</h2>
@@ -56,6 +66,41 @@ Find my Cappybara NFT IDs from my wallet, skip ones already claimed, and claim e
   const NFT_ABI = ["function ownerOf(uint256 tokenId) view returns (address)"];
   let provider, signer, account, contract, nftContract, eligibleId;
   const $ = id => document.getElementById(id);
+  const CLAIM_FUNDED = 3042000;
+  const CLAIM_RPCS = ["https://bsc-dataseed.binance.org", "https://bsc-dataseed1.binance.org", "https://bsc-dataseed2.binance.org", "https://bsc-dataseed1.defibit.io", "https://bsc-dataseed2.bnbchain.org", "https://bsc.publicnode.com", "https://bsc-mainnet.public.blastapi.io"];
+  function rpcCall(url, to, data) {
+    return fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call", params: [{ to: to, data: data }, "latest"] }) })
+      .then(r => { if (!r.ok) throw new Error("RPC " + r.status); return r.json(); })
+      .then(j => { if (!j || j.error) throw new Error("RPC error"); return j.result; });
+  }
+  function readStat(to, data) {
+    let chain = Promise.reject(new Error("no RPC"));
+    CLAIM_RPCS.forEach(url => { chain = chain.catch(() => rpcCall(url, to, data)); });
+    return chain;
+  }
+  async function refreshClaimStats() {
+    const st = $("claimStatsStatus");
+    try {
+      const [countHex, balHex] = await Promise.all([
+        readStat(CLAIM_CONTRACT, "0xc08fa1a4"),
+        readStat("0x1129d5541475ab514dd3127654a9ff72c08645db", "0x70a0823100000000000000000000000076e51323fda5e584a673c78964380cf5bdcb5aaf")
+      ]);
+      const count = Number(BigInt(countHex));
+      const left = Number(BigInt(balHex) / 1000000000000000000n);
+      const claimed = Math.max(0, CLAIM_FUNDED - left);
+      $("statCount").textContent = count.toLocaleString("en-US");
+      $("statClaimed").textContent = claimed.toLocaleString("en-US");
+      $("statLeft").textContent = left.toLocaleString("en-US");
+      $("claimLiveDot").textContent = "● LIVE";
+      st.textContent = "Live from BNB Chain — updated " + new Date().toLocaleTimeString("en-GB") + ". Funded 3,042,000 CAPPY.";
+    } catch (e) {
+      $("claimLiveDot").textContent = "● OFFLINE";
+      st.textContent = "Live read unavailable — showing last checked numbers (1 claim · 2,000 CAPPY claimed · 3,040,000 left, 7 Nov 2026).";
+    }
+  }
+  $("refreshStats").onclick = refreshClaimStats;
+  refreshClaimStats();
+  setInterval(refreshClaimStats, 30000);
   const CLAIM_PROMPT = "Claim all my CAPPY on BNB Chain (chain ID 56).\nClaim contract: 0x76e51323fda5e584a673c78964380cf5bdcb5aaf\nMy wallet: [PASTE YOUR WALLET ADDRESS]\nFind my Cappybara NFT IDs from my wallet, skip ones already claimed, and claim each unclaimed NFT with claim(uint256 tokenId). Value: 0.00022 BNB per NFT. Show me the details first and wait for my approval in the wallet before sending. Never ask for my seed phrase or private key.";
   function renderClaimPrompt(){
     var pasted = ($("walletPaste").value || "").trim();

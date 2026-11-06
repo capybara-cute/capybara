@@ -252,8 +252,6 @@
       .total-line b{color:var(--ink);font-size:16px}
       .mint-card .btn{width:100%;font-size:16px;padding:14px}
       .mint-note{font-size:13px;color:var(--faint);margin-top:14px;line-height:1.55}
-      .mint-claim{display:block;text-align:center;margin-top:12px;padding:10px 12px;border:3px solid var(--line2);background:var(--panel2);color:var(--green);font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:700;text-decoration:none}
-      .mint-claim:hover{background:#2a1d10}
       .status{
         margin-top:20px;border:3px solid var(--line);background:var(--bg2);
         padding:14px 16px;font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--muted);
@@ -518,7 +516,6 @@
               <div class="total-line"><span data-i18n="totalFee">Total fee</span><b id="totalFree">0.0001 BNB</b></div>
               <button class="btn green" type="button" data-mint="free" data-i18n="freeBtn">Free Mint</button>
               <p class="mint-note" data-i18n="freeNote">The total sent to the contract is just the fee: mint amount × 0.0001 BNB. There is no NFT price in this phase.</p>
-              <a class="mint-claim" href="claim.html" data-i18n="mintClaimLink">Claim CAPPY →</a>
             </article>
 
             <!-- PAID -->
@@ -543,7 +540,6 @@
               <div class="total-line"><span data-i18n="totalPrice">Total price</span><b id="totalPaid">0.001 BNB</b></div>
               <button class="btn" type="button" data-mint="paid" data-i18n="paidBtn">Paid Mint</button>
               <p class="mint-note" data-i18n="paidNote">Total sent to the contract: mint amount × 0.001 BNB. Make sure your BNB balance covers the price + gas.</p>
-              <a class="mint-claim" href="claim.html" data-i18n="mintClaimLink">Claim CAPPY →</a>
             </article>
           </div>
 
@@ -698,6 +694,21 @@ Call mintPaid({{QTY}}) with a value of 0.001 BNB × {{QTY}} = {{TOTAL}}. Show me
             <a class="btn green glow" href="claim.html" data-i18n="claimPageBtn">Claim CAPPY</a>
             <a class="btn ghost" href="https://bscscan.com/token/0x1129d5541475ab514dd3127654a9ff72c08645db" target="_blank" rel="noopener" data-i18n="tokenBscBtn">View token on BscScan →</a>
           </div>
+          <div class="live-panel" id="claimLivePanel" style="margin-top:20px">
+            <div class="live-head">
+              <span class="live-dot" id="claimLiveDot"></span>
+              <span class="live-label" data-i18n="claimLiveLabel">CLAIMS LIVE ON-CHAIN</span>
+              <span class="spacer"></span>
+              <span class="live-status" id="claimLiveStatus">Loading…</span>
+              <button type="button" class="live-refresh" id="claimLiveRefreshBtn" data-i18n="liveRefresh">Refresh</button>
+            </div>
+            <div class="live-grid">
+              <div class="live-cell free"><span class="live-num" id="claimCountVal">1</span><span class="live-cap"><span data-i18n="claimCountLabel">CLAIMS COMPLETED</span></span></div>
+              <div class="live-cell"><span class="live-num" id="claimClaimedVal">2,000</span><span class="live-cap"><span data-i18n="claimClaimedLabel">CAPPY CLAIMED</span></span></div>
+              <div class="live-cell paid"><span class="live-num" id="claimLeftVal">3,040,000</span><span class="live-cap"><span data-i18n="claimLeftLabel">CAPPY LEFT IN CONTRACT</span></span></div>
+            </div>
+            <div class="live-line" id="claimLiveLine">1 claim completed · 2,000 CAPPY claimed · 3,040,000 CAPPY left in the claim contract (funded 3,042,000).</div>
+          </div>
           <p class="agent-note" data-i18n="claimPending">Claims are open. Any current NFT holder can claim now — connect your wallet on the claim page.</p>
           <p class="agent-note" data-i18n="tokenNote">Claims are open. Any current NFT holder can claim — no registration needed. The claim page checks who holds the NFT and asks holders to approve transactions in their own wallet. Never share your seed phrase or private key.</p>
           <div class="prompt-grid" style="margin-top:22px">
@@ -796,7 +807,7 @@ Find my Cappybara NFT IDs from my wallet, skip ones already claimed, and claim e
           qtyMinus: "Decrease amount", qtyPlus: "Increase amount",
           totalFee: "Total fee", totalPrice: "Total price",
           freeBtn: "Free Mint",
-          freeNote: "The total sent to the contract is just the fee: mint amount × 0.0001 BNB. There is no NFT price in this phase.", mintClaimLink: "Claim CAPPY →",
+          freeNote: "The total sent to the contract is just the fee: mint amount × 0.0001 BNB. There is no NFT price in this phase.",
           paidFase: "PHASE 2 • TOKENS #5,001–#10,000", paidH3: "Paid Mint",
           paidRange: "Phase allocation: 5,000 NFTs",
           paidSub: "Price per NFT <b>0.001 BNB</b>. This phase covers the last 5,000 tokens after the free mint phase.",
@@ -887,6 +898,7 @@ Find my Cappybara NFT IDs from my wallet, skip ones already claimed, and claim e
           liveHero: "Minted {x} / 10,000 — Free left {y} • Paid left {z}",
           liveLive: "Live from the contract on BNB Chain",
           liveFallback: "Live read unavailable — showing last checked numbers (6 Nov 2026)",
+          claimLiveLabel: "CLAIMS LIVE ON-CHAIN", claimCountLabel: "CLAIMS COMPLETED", claimClaimedLabel: "CAPPY CLAIMED", claimLeftLabel: "CAPPY LEFT IN CONTRACT", claimLiveLine: "{x} claim(s) completed · {y} CAPPY claimed · {z} CAPPY left in the claim contract (funded 3,042,000).", claimLiveFallback: "Live read unavailable — showing last checked numbers (7 Nov 2026)",
           liveRefresh: "Refresh",
           allocLeft: "{x} left / 5,000"
         },
@@ -921,7 +933,7 @@ Find my Cappybara NFT IDs from my wallet, skip ones already claimed, and claim e
           qtyMinus: "减少数量", qtyPlus: "增加数量",
           totalFee: "总费用", totalPrice: "总价",
           freeBtn: "免费铸造",
-          freeNote: "发送到合约的总金额只有费用：铸造数量 × 0.0001 BNB。此阶段没有 NFT 价格。", mintClaimLink: "领取 CAPPY →",
+          freeNote: "发送到合约的总金额只有费用：铸造数量 × 0.0001 BNB。此阶段没有 NFT 价格。",
           paidFase: "阶段 2 • 代币 #5,001–#10,000", paidH3: "付费铸造",
           paidRange: "阶段分配：5,000 只 NFT",
           paidSub: "每只 NFT 价格 <b>0.001 BNB</b>。此阶段涵盖免费铸造阶段之后的最后 5,000 个代币。",
@@ -1012,6 +1024,7 @@ faqKicker: "常见问题", faqH2: "常见问题解答",
           liveHero: "已铸造 {x} / 10,000 — 免费剩余 {y} • 付费剩余 {z}",
           liveLive: "来自 BNB 链上合约的实时数据",
           liveFallback: "实时读取不可用 — 显示上次核对的数据（2026年11月6日）",
+          claimLiveLabel: "领取实时链上数据", claimCountLabel: "已领取次数", claimClaimedLabel: "已领取 CAPPY", claimLeftLabel: "合约剩余 CAPPY", claimLiveLine: "已完成 {x} 次领取 · 已领取 {y} CAPPY · 合约剩余 {z} CAPPY（已充值 3,042,000）。", claimLiveFallback: "实时读取不可用 — 显示上次核对的数据（2026年11月7日）",
           liveRefresh: "刷新",
           allocLeft: "剩余 {x} / 5,000"
         }
@@ -1777,6 +1790,81 @@ Find my Cappybara NFT IDs from my wallet, skip ones already claimed, and claim e
       if (liveRefreshBtn) liveRefreshBtn.addEventListener("click", refreshLiveSupply);
       refreshLiveSupply();
       setInterval(refreshLiveSupply, 30000);
+
+      /* ================= LIVE CLAIM STATS — on-chain, auto-refresh =================
+         claimedCount() on the claim contract + CAPPY balance of the claim contract.
+         Claimed CAPPY = funded (3,042,000) − balance. Same multi-RPC fallback as the
+         mint board: one failing RPC must not kill the board. */
+      var CLAIM_CONTRACT = "0x76e51323fda5e584a673c78964380cf5bdcb5aaf";
+      var TOKEN_CONTRACT = "0x1129d5541475ab514dd3127654a9ff72c08645db";
+      var CLAIM_FUNDED = 3042000;
+      var SEL_CLAIMED_COUNT = "0xc08fa1a4"; /* claimedCount() */
+      var SEL_CLAIM_BALANCE = "0x70a0823100000000000000000000000076e51323fda5e584a673c78964380cf5bdcb5aaf"; /* balanceOf(claim) */
+      var claimState = { count: 1, claimed: 2000, left: 3040000, live: false };
+      function renderClaimLive() {
+        var c = fmtNum(claimState.count), y = fmtNum(claimState.claimed), z = fmtNum(claimState.left);
+        var el;
+        el = document.getElementById("claimCountVal"); if (el) el.textContent = c;
+        el = document.getElementById("claimClaimedVal"); if (el) el.textContent = y;
+        el = document.getElementById("claimLeftVal"); if (el) el.textContent = z;
+        el = document.getElementById("claimLiveLine");
+        if (el) el.textContent = t("claimLiveLine").split("{x}").join(c).split("{y}").join(y).split("{z}").join(z);
+        el = document.getElementById("claimLiveStatus");
+        if (el) el.textContent = claimState.live ? t("liveLive") : t("claimLiveFallback");
+        el = document.getElementById("claimLiveDot");
+        if (el) el.classList.toggle("on", claimState.live);
+      }
+      function rpcEthCallTo(url, to, data) {
+        return fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            jsonrpc: "2.0", id: 1, method: "eth_call",
+            params: [{ to: to, data: data }, "latest"]
+          })
+        }).then(function (r) {
+          if (!r.ok) throw new Error("RPC HTTP " + r.status);
+          return r.json();
+        }).then(function (j) {
+          if (!j || j.error) throw new Error("RPC error");
+          return j.result;
+        });
+      }
+      function readClaimValue(to, data) {
+        var chain = Promise.reject(new Error("no RPC"));
+        BSC_RPCS.forEach(function (url) {
+          chain = chain.catch(function () { return rpcEthCallTo(url, to, data); });
+        });
+        return chain;
+      }
+      function readClaimAll() {
+        return Promise.all([
+          readClaimValue(CLAIM_CONTRACT, SEL_CLAIMED_COUNT).then(function (r) { return Number(BigInt(r)); }),
+          readClaimValue(TOKEN_CONTRACT, SEL_CLAIM_BALANCE).then(function (r) { return Number(BigInt(r) / 1000000000000000000n); })
+        ]).then(function (r) {
+          return { count: r[0], left: r[1], claimed: Math.max(0, CLAIM_FUNDED - r[1]) };
+        });
+      }
+      function refreshLiveClaim() {
+        var p = getProvider();
+        var viaWallet = p ? Promise.all([
+          p.request({ method: "eth_call", params: [{ to: CLAIM_CONTRACT, data: SEL_CLAIMED_COUNT }, "latest"] }).then(function (r) { return Number(BigInt(r)); }),
+          p.request({ method: "eth_call", params: [{ to: TOKEN_CONTRACT, data: SEL_CLAIM_BALANCE }, "latest"] }).then(function (r) { return Number(BigInt(r) / 1000000000000000000n); })
+        ]).then(function (r) { return { count: r[0], left: r[1], claimed: Math.max(0, CLAIM_FUNDED - r[1]) }; }) : Promise.reject(new Error("no wallet"));
+        viaWallet.then(function (v) {
+          claimState.count = v.count; claimState.claimed = v.claimed; claimState.left = v.left; claimState.live = true; renderClaimLive();
+        }).catch(function () {
+          readClaimAll().then(function (v) {
+            claimState.count = v.count; claimState.claimed = v.claimed; claimState.left = v.left; claimState.live = true; renderClaimLive();
+          }).catch(function () {
+            claimState.live = false; renderClaimLive();
+          });
+        });
+      }
+      var claimLiveRefreshBtn = document.getElementById("claimLiveRefreshBtn");
+      if (claimLiveRefreshBtn) claimLiveRefreshBtn.addEventListener("click", refreshLiveClaim);
+      refreshLiveClaim();
+      setInterval(refreshLiveClaim, 30000);
 
 
       /* ================= MARKET — via Element =================
