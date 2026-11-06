@@ -874,6 +874,7 @@ Find my Cappybara NFT IDs from my wallet, skip ones already claimed, and claim e
           statusMintClosed: "{label} is not open yet — the Cappybara contract is not connected to this page yet. Once the contract is live, this button will send a {total} transaction from your wallet. In the meantime, the AI agent prompts below are ready to use.",
           statusSending: "Sending {label} transaction of {total}…",
           statusContractOk: "Contract connected. Confirm the transaction in your wallet.",
+          statusTxSent: "Transaction sent: {hash} — waiting for BNB Chain confirmation. Refresh the live board in a moment; your Cappybara will appear in your wallet once confirmed.",
           statusTxFail: "Transaction failed: ",
           liveLabel: "LIVE ON-CHAIN",
           liveMintedLabel: "MINTED", liveFreeLabel: "FREE REMAINING", livePaidLabel: "PAID REMAINING",
@@ -998,6 +999,7 @@ faqKicker: "常见问题", faqH2: "常见问题解答",
           statusMintClosed: "{label}尚未开放——Cappybara 合约尚未连接到此页面。合约上线后，此按钮将从你的钱包发送一笔 {total} 的交易。在此期间，下方的 AI 代理提示词已可使用。",
           statusSending: "正在发送{label}交易，金额 {total}…",
           statusContractOk: "合约已连接。请在钱包中确认交易。",
+          statusTxSent: "交易已发送：{hash} — 等待 BNB 链确认。稍后刷新实时数据；确认后你的 Cappybara 会出现在钱包中。",
           statusTxFail: "交易失败：",
           liveLabel: "链上实时数据",
           liveMintedLabel: "已铸造", liveFreeLabel: "免费剩余", livePaidLabel: "付费剩余",
@@ -1509,9 +1511,17 @@ Find my Cappybara NFT IDs from my wallet, skip ones already claimed, and claim e
                 return p.request({ method: "wallet_switchEthereumChain", params: [{ chainId: BNB_CHAIN_ID }] });
               }
             }).then(function () {
-              /* The contract call is enabled once CONTRACT_ADDRESS is filled in
-                 and the final mint ABI is available. */
-              setStatus(t("statusContractOk"), "ok");
+              var fn = phase === "free" ? "0xa4146733" : "0x26c7f77c"; /* mintFree(uint256) / mintPaid(uint256) */
+              var amount = phase === "free" ? qty.free : qty.paid;
+              var data = fn + amount.toString(16).padStart(64, "0");
+              var valueHex = "0x" + Math.round(total * 1e18).toString(16);
+              return p.request({
+                method: "eth_sendTransaction",
+                params: [{ from: addr, to: CONTRACT_ADDRESS, value: valueHex, data: data }]
+              });
+            }).then(function (txHash) {
+              setStatus(t("statusTxSent").split("{hash}").join(txHash), "ok");
+              refreshLiveSupply();
             }).catch(function (err) {
               setStatus(t("statusTxFail") + (err && err.message ? err.message : err), "err");
             });
