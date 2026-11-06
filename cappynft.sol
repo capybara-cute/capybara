@@ -5,13 +5,16 @@ interface IERC20Claim {
     function transfer(address to, uint256 value) external returns (bool);
 }
 
+interface IERC721Claim {
+    function ownerOf(uint256 tokenId) external view returns (address);
+}
+
 /**
  * @title CappyNftClaim
- * @notice Registry-based CAPPY claims for original NFT minters.
- * @dev The deployed NFT contract cannot call this registry automatically, so
- *      the project registry admin must record each original minter from the
- *      NFT's on-chain mint Transfer event. This supports future mints without
- *      changing the already-deployed NFT contract.
+ * @notice CAPPY claims for current Cappybara NFT holders.
+ * @dev No minter registry: whoever holds the NFT at claim time may claim,
+ *      once per NFT. A transfer moves the claim right to the new holder.
+ *      The claim contract never needs to know who minted the NFT.
  */
 contract CappyNftClaim {
     uint256 public constant CLAIM_FEE = 0.00022 ether;
@@ -25,23 +28,16 @@ contract CappyNftClaim {
     address payable public immutable treasury;
     address public owner;
 
-    mapping(uint256 => address) public originalMinterOf;
     mapping(uint256 => bool) public claimed;
-    uint256 public registeredCount;
     uint256 public claimedCount;
 
-    event MinterRegistered(uint256 indexed tokenId, address indexed originalMinter);
-    event Claimed(uint256 indexed tokenId, address indexed originalMinter, uint256 amount, uint256 fee);
+    event Claimed(uint256 indexed tokenId, address indexed holder, uint256 amount, uint256 fee);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     error InvalidAddress();
     error NotOwner();
-    error InvalidArrayLength();
-    error InvalidMinter();
-    error AlreadyRegistered();
-    error SupplyLimitReached();
     error IncorrectFee();
-    error NotOriginalMinter();
+    error NotCurrentHolder();
     error AlreadyClaimed();
     error TreasuryTransferFailed();
     error TokenTransferFailed();
@@ -60,30 +56,6 @@ contract CappyNftClaim {
         emit OwnershipTransferred(address(0), msg.sender);
     }
 
-    /** Register one original mint recipient. Use the recipient from the NFT
-     *  contract's mint Transfer event (from address(0)), never the current NFT owner.
-     */
-    function registerMinter(uint256 tokenId, address originalMinter) external onlyOwner {
-        _register(tokenId, originalMinter);
-    }
-
-    /** Batch registration reduces gas for initial and future mint batches. */
-    function registerMinters(uint256[] calldata tokenIds, address[] calldata originalMinters) external onlyOwner {
-        if (tokenIds.length != originalMinters.length) revert InvalidArrayLength();
-        for (uint256 i = 0; i < tokenIds.length; i++) {
-            _register(tokenIds[i], originalMinters[i]);
-        }
-    }
-
-    function _register(uint256 tokenId, address originalMinter) private {
-        if (originalMinter == address(0)) revert InvalidMinter();
-        if (originalMinterOf[tokenId] != address(0)) revert AlreadyRegistered();
-        if (registeredCount >= MAX_NFTS) revert SupplyLimitReached();
-        originalMinterOf[tokenId] = originalMinter;
-        registeredCount++;
-        emit MinterRegistered(tokenId, originalMinter);
-    }
-
     /** Reward for a token ID: 2,000 CAPPY for free mints (ID <= 5,000),
      *  6,000 CAPPY for paid mints (ID > 5,000). */
     function rewardFor(uint256 tokenId) public pure returns (uint256) {
@@ -91,12 +63,11 @@ contract CappyNftClaim {
     }
 
     /** One NFT per claim transaction; exact 0.00022 BNB fee goes to treasury.
-     *  Reward is 2,000 CAPPY for free mints (tokenId <= 5,000) and 6,000 CAPPY
-     *  for paid mints (tokenId > 5,000). */
+     *  Only the wallet currently holding the NFT may claim, once per NFT. */
     function claim(uint256 tokenId) external payable {
         if (msg.value != CLAIM_FEE) revert IncorrectFee();
-        if (originalMinterOf[tokenId] != msg.sender) revert NotOriginalMinter();
         if (claimed[tokenId]) revert AlreadyClaimed();
+        if (IERC721Claim(nft).ownerOf(tokenId) != msg.sender) revert NotCurrentHolder();
 
         claimed[tokenId] = true;
         claimedCount++;
