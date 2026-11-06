@@ -10,12 +10,12 @@
 </head>
 <body><main class="wrap">
 <a href="index.html">← Back to Cappybara</a>
-<h1>Claim CAPPY as an NFT's original minter</h1>
-<p>Each NFT recorded in the claim registry is eligible for 2,000 CAPPY (free mint, IDs 1-5,000) or 6,000 CAPPY (paid mint, IDs 5,001-10,000). Only the wallet that first received the NFT at mint time may claim. Current owners who were not the original minters cannot claim. Enter the NFT ID to check the registry.</p>
+<h1>Claim CAPPY as an NFT holder</h1>
+<p>Each NFT is eligible for 2,000 CAPPY (free mint, IDs 1-5,000) or 6,000 CAPPY (paid mint, IDs 5,001-10,000). Only the wallet currently holding the NFT may claim, once per NFT — a transfer moves the claim to the new holder. Enter the NFT ID to check.</p>
 <div class="card">
   <b>Claim fee: 0.00022 BNB per NFT</b>
   <p>The fee is sent to the project treasury specified in the contract. Only one NFT can be claimed per transaction. Review the transaction details in your wallet before approving.</p>
-  <p>Network: BNB Smart Chain (56). Newly minted NFTs become eligible after the project admin registers the original minter in the claim registry.</p>
+  <p>Network: BNB Smart Chain (56). Any holder can claim as soon as the claim contract is deployed and funded — no registration needed.</p>
   <button class="btn" id="connect">Connect Wallet</button>
   <div id="walletStatus" class="status" style="margin-top:14px">Not connected.</div>
 </div>
@@ -32,17 +32,17 @@
 <script>
 (() => {
   // Configure this only after deploying and verifying CappyNftClaim on BSC 56.
-  const CLAIM_CONTRACT = ""; // deployed registry contract address
+  const CLAIM_CONTRACT = ""; // deployed claim contract address
+  const NFT_CONTRACT = "0xba33f7ff4134af69af19ecdf141221666b577c32";
   const ABI = [
     "function claim(uint256 tokenId) payable",
-    "function originalMinterOf(uint256 tokenId) view returns (address)",
     "function claimed(uint256 tokenId) view returns (bool)",
     "function CLAIM_FEE() view returns (uint256)",
     "function rewardFor(uint256 tokenId) view returns (uint256)",
-    "function registeredCount() view returns (uint256)",
     "function claimedCount() view returns (uint256)"
   ];
-  let provider, signer, account, contract, eligibleId;
+  const NFT_ABI = ["function ownerOf(uint256 tokenId) view returns (address)"];
+  let provider, signer, account, contract, nftContract, eligibleId;
   const $ = id => document.getElementById(id);
   function setStatus(id, text){ $(id).textContent = text; }
   function providerObject(){ return window.okxwallet || window.ethereum || null; }
@@ -62,12 +62,13 @@
         return;
       }
       if (!configured()) {
-        setStatus("walletStatus", `Wallet connected to BNB Chain: ${account}\nClaims are not open yet: the claim registry contract address has not been set after deployment.`);
+        setStatus("walletStatus", `Wallet connected to BNB Chain: ${account}\nClaims are not open yet: the claim contract address has not been set after deployment.`);
         return;
       }
       contract = new ethers.Contract(CLAIM_CONTRACT, ABI, provider);
-      const [registered, alreadyClaimed] = await Promise.all([contract.registeredCount(), contract.claimedCount()]);
-      setStatus("walletStatus", `Wallet connected to BNB Chain: ${account}\nClaim registry active: ${registered} NFTs registered; ${alreadyClaimed} claims completed.`);
+      nftContract = new ethers.Contract(NFT_CONTRACT, NFT_ABI, provider);
+      const alreadyClaimed = await contract.claimedCount();
+      setStatus("walletStatus", `Wallet connected to BNB Chain: ${account}\nClaim contract active: ${alreadyClaimed} claims completed.`);
       $("check").disabled = false;
     } catch(e) {
       setStatus("walletStatus", e.shortMessage || e.message || String(e));
@@ -81,13 +82,12 @@
       const raw = $("tokenId").value.trim();
       if (!/^\d+$/.test(raw)) throw new Error("Enter the NFT ID as a non-negative integer.");
       const id = BigInt(raw);
-      const [minter, done] = await Promise.all([contract.originalMinterOf(id), contract.claimed(id)]);
-      if (minter === ethers.ZeroAddress) throw new Error("This NFT ID is not registered in the claim registry. Newly minted NFTs become eligible after the admin registers the original minter.");
-      if (minter.toLowerCase() !== account.toLowerCase()) throw new Error(`Not eligible. This NFT is recorded as having been originally minted by ${minter}.`);
+      const [holder, done] = await Promise.all([nftContract.ownerOf(id), contract.claimed(id)]);
+      if (holder.toLowerCase() !== account.toLowerCase()) throw new Error(`Not eligible. This NFT is currently held by ${holder}. Only the current holder can claim.`);
       if (done) throw new Error("The reward for this NFT has already been claimed.");
       eligibleId = id;
       const [fee, reward] = await Promise.all([contract.CLAIM_FEE(), contract.rewardFor(id)]);
-      setStatus("result", `Eligible: NFT #${id}\nOriginal minter: ${minter}\nReward: ${ethers.formatUnits(reward, 18)} CAPPY\nFee: ${ethers.formatEther(fee)} BNB`);
+      setStatus("result", `Eligible: NFT #${id}\nCurrent holder: ${holder}\nReward: ${ethers.formatUnits(reward, 18)} CAPPY\nFee: ${ethers.formatEther(fee)} BNB`);
       $("claim").disabled = false;
     } catch(e) {
       setStatus("result", e.shortMessage || e.message || String(e));
@@ -103,7 +103,7 @@
       const tx = await contract.connect(signer).claim(eligibleId, {value: fee});
       setStatus("result", `Transaction submitted: ${tx.hash}\nWaiting for BNB Chain confirmation…`);
       await tx.wait();
-      setStatus("result", `Success: NFT #${eligibleId} claimed. Check the CAPPY balance in the original minter's wallet.`);
+      setStatus("result", `Success: NFT #${eligibleId} claimed. Check the CAPPY balance in your wallet.`);
       eligibleId = null;
     } catch(e) {
       $("claim").disabled = false;
