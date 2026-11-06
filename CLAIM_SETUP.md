@@ -2,10 +2,10 @@
 
 ## Rules implemented
 
-- Each registered NFT ID receives **10,000 CAPPY** (18 decimals), whether it was free-minted or paid-minted.
+- Each registered NFT ID receives **2,000 CAPPY** (free mint, IDs 1-5,000) or **6,000 CAPPY** (paid mint, IDs 5,001-10,000, 3x the free reward) (18 decimals). The claim pool is **40,000,000 CAPPY** (40% of the 100,000,000 supply); **60,000,000 CAPPY** (60%) is reserved for liquidity.
 - Only the wallet that received the NFT in the original mint `Transfer(address(0), minter, tokenId)` event can claim. A later NFT owner cannot claim that NFT's allocation.
 - One NFT is claimed per transaction, once. The fixed fee is **0.00022 BNB per NFT**, sent to treasury `0xea92a9df3ad64b2de2e84ccb2cf96b216b06c9bb`. If a claim fails, the entire transaction, including the fee transfer, reverts.
-- The registry contract supports up to 10,000 IDs. At 10,000 registrations, the full 100,000,000 CAPPY supply is allocated. It has no owner withdrawal function.
+- The registry contract supports up to 10,000 IDs. At 10,000 registrations, 40,000,000 CAPPY is allocated (5,000 x 2,000 + 5,000 x 6,000). It has no owner withdrawal function, so fund only the CAPPY needed for registered minters; unclaimed CAPPY stays in the owner wallet and can be added to liquidity later.
 
 ## Important limitation of the existing NFT contract
 
@@ -34,12 +34,12 @@ On BNB Smart Chain (chain ID 56), deploy `contracts/CappyNftClaim.sol` with Soli
 2. NFT contract: `0xba33f7ff4134af69af19ecdf141221666b577c32`
 3. Treasury: `0xea92a9df3ad64b2de2e84ccb2cf96b216b06c9bb`
 
-The deploying wallet becomes registry owner. Register and audit all existing NFT minters, then transfer enough CAPPY to the registry contract. Funding it with **100,000,000 CAPPY** covers all 10,000 possible NFTs. Verify the deployed token/NFT/treasury addresses, owner, registration count, and CAPPY balance before opening claims. Deployment, registration, ownership transfer, and funding all require the project owner's own wallet approvals.
+The deploying wallet becomes registry owner. Register and audit all existing NFT minters, then transfer enough CAPPY to the registry contract. Funding it with **40,000,000 CAPPY** covers all 10,000 possible NFTs. To keep unclaimed CAPPY available for liquidity, fund in stages instead — for example, 2,994,000 CAPPY covers the 1,497 free mints so far (1,497 x 2,000). Verify the deployed token/NFT/treasury addresses, owner, registration count, and CAPPY balance before opening claims. Deployment, registration, ownership transfer, and funding all require the project owner's own wallet approvals.
 
 ## Activate the website
 
 1. Set `CLAIM_CONTRACT` in `claim.html` to the verified deployed registry address.
-2. Test on BNB Chain with a registered minter: correct minter passes; unregistered ID and wrong wallet fail; a duplicate claim fails; exactly 0.00022 BNB reaches treasury; exactly 10,000 CAPPY reaches the original minter.
+2. Test on BNB Chain with a registered minter: correct minter passes; unregistered ID and wrong wallet fail; a duplicate claim fails; exactly 0.00022 BNB reaches treasury; exactly 2,000 CAPPY (free mint) or 6,000 CAPPY (paid mint) reaches the original minter.
 3. Only after those checks, change the coming-soon label/status on `index.html` to indicate claims are open and publish.
 
 The site asks minters to approve transactions in their own wallet. It never requests a seed phrase or private key.
