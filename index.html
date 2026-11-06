@@ -252,6 +252,8 @@
       .total-line b{color:var(--ink);font-size:16px}
       .mint-card .btn{width:100%;font-size:16px;padding:14px}
       .mint-note{font-size:13px;color:var(--faint);margin-top:14px;line-height:1.55}
+      .mint-claim{display:block;text-align:center;margin-top:12px;padding:10px 12px;border:3px solid var(--line2);background:var(--panel2);color:var(--green);font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:700;text-decoration:none}
+      .mint-claim:hover{background:#2a1d10}
       .status{
         margin-top:20px;border:3px solid var(--line);background:var(--bg2);
         padding:14px 16px;font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--muted);
@@ -516,6 +518,7 @@
               <div class="total-line"><span data-i18n="totalFee">Total fee</span><b id="totalFree">0.0001 BNB</b></div>
               <button class="btn green" type="button" data-mint="free" data-i18n="freeBtn">Free Mint</button>
               <p class="mint-note" data-i18n="freeNote">The total sent to the contract is just the fee: mint amount × 0.0001 BNB. There is no NFT price in this phase.</p>
+              <a class="mint-claim" href="claim.html" data-i18n="mintClaimLink">Claim CAPPY →</a>
             </article>
 
             <!-- PAID -->
@@ -540,6 +543,7 @@
               <div class="total-line"><span data-i18n="totalPrice">Total price</span><b id="totalPaid">0.001 BNB</b></div>
               <button class="btn" type="button" data-mint="paid" data-i18n="paidBtn">Paid Mint</button>
               <p class="mint-note" data-i18n="paidNote">Total sent to the contract: mint amount × 0.001 BNB. Make sure your BNB balance covers the price + gas.</p>
+              <a class="mint-claim" href="claim.html" data-i18n="mintClaimLink">Claim CAPPY →</a>
             </article>
           </div>
 
@@ -792,7 +796,7 @@ Find my Cappybara NFT IDs from my wallet, skip ones already claimed, and claim e
           qtyMinus: "Decrease amount", qtyPlus: "Increase amount",
           totalFee: "Total fee", totalPrice: "Total price",
           freeBtn: "Free Mint",
-          freeNote: "The total sent to the contract is just the fee: mint amount × 0.0001 BNB. There is no NFT price in this phase.",
+          freeNote: "The total sent to the contract is just the fee: mint amount × 0.0001 BNB. There is no NFT price in this phase.", mintClaimLink: "Claim CAPPY →",
           paidFase: "PHASE 2 • TOKENS #5,001–#10,000", paidH3: "Paid Mint",
           paidRange: "Phase allocation: 5,000 NFTs",
           paidSub: "Price per NFT <b>0.001 BNB</b>. This phase covers the last 5,000 tokens after the free mint phase.",
@@ -917,7 +921,7 @@ Find my Cappybara NFT IDs from my wallet, skip ones already claimed, and claim e
           qtyMinus: "减少数量", qtyPlus: "增加数量",
           totalFee: "总费用", totalPrice: "总价",
           freeBtn: "免费铸造",
-          freeNote: "发送到合约的总金额只有费用：铸造数量 × 0.0001 BNB。此阶段没有 NFT 价格。",
+          freeNote: "发送到合约的总金额只有费用：铸造数量 × 0.0001 BNB。此阶段没有 NFT 价格。", mintClaimLink: "领取 CAPPY →",
           paidFase: "阶段 2 • 代币 #5,001–#10,000", paidH3: "付费铸造",
           paidRange: "阶段分配：5,000 只 NFT",
           paidSub: "每只 NFT 价格 <b>0.001 BNB</b>。此阶段涵盖免费铸造阶段之后的最后 5,000 个代币。",
