@@ -14,7 +14,7 @@ interface IERC20Claim {
  *      changing the already-deployed NFT contract.
  */
 contract CappyNftClaim {
-    uint256 public constant CLAIM_FEE = 0.0003 ether;
+    uint256 public constant CLAIM_FEE = 0.00022 ether;
     uint256 public constant REWARD_PER_NFT = 10_000 * 10 ** 18;
     uint256 public constant MAX_NFTS = 10_000;
 
@@ -82,7 +82,7 @@ contract CappyNftClaim {
         emit MinterRegistered(tokenId, originalMinter);
     }
 
-    /** One NFT per claim transaction; exact 0.0003 BNB fee goes to treasury. */
+    /** One NFT per claim transaction; exact 0.00022 BNB fee goes to treasury. */
     function claim(uint256 tokenId) external payable {
         if (msg.value != CLAIM_FEE) revert IncorrectFee();
         if (originalMinterOf[tokenId] != msg.sender) revert NotOriginalMinter();
