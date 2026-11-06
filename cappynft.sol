@@ -15,7 +15,9 @@ interface IERC20Claim {
  */
 contract CappyNftClaim {
     uint256 public constant CLAIM_FEE = 0.00022 ether;
-    uint256 public constant REWARD_PER_NFT = 10_000 * 10 ** 18;
+    uint256 public constant REWARD_FREE = 2_000 * 10 ** 18;
+    uint256 public constant REWARD_PAID = 6_000 * 10 ** 18;
+    uint256 public constant FREE_MAX_TOKEN_ID = 5_000;
     uint256 public constant MAX_NFTS = 10_000;
 
     address public immutable token;
@@ -82,7 +84,15 @@ contract CappyNftClaim {
         emit MinterRegistered(tokenId, originalMinter);
     }
 
-    /** One NFT per claim transaction; exact 0.00022 BNB fee goes to treasury. */
+    /** Reward for a token ID: 2,000 CAPPY for free mints (ID <= 5,000),
+     *  6,000 CAPPY for paid mints (ID > 5,000). */
+    function rewardFor(uint256 tokenId) public pure returns (uint256) {
+        return tokenId <= FREE_MAX_TOKEN_ID ? REWARD_FREE : REWARD_PAID;
+    }
+
+    /** One NFT per claim transaction; exact 0.00022 BNB fee goes to treasury.
+     *  Reward is 2,000 CAPPY for free mints (tokenId <= 5,000) and 6,000 CAPPY
+     *  for paid mints (tokenId > 5,000). */
     function claim(uint256 tokenId) external payable {
         if (msg.value != CLAIM_FEE) revert IncorrectFee();
         if (originalMinterOf[tokenId] != msg.sender) revert NotOriginalMinter();
@@ -92,8 +102,9 @@ contract CappyNftClaim {
         claimedCount++;
         (bool feeSent, ) = treasury.call{value: CLAIM_FEE}("");
         if (!feeSent) revert TreasuryTransferFailed();
-        if (!IERC20Claim(token).transfer(msg.sender, REWARD_PER_NFT)) revert TokenTransferFailed();
-        emit Claimed(tokenId, msg.sender, REWARD_PER_NFT, CLAIM_FEE);
+        uint256 reward = rewardFor(tokenId);
+        if (!IERC20Claim(token).transfer(msg.sender, reward)) revert TokenTransferFailed();
+        emit Claimed(tokenId, msg.sender, reward, CLAIM_FEE);
     }
 
     function transferOwnership(address newOwner) external onlyOwner {
