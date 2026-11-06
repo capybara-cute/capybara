@@ -4,7 +4,7 @@
 
 - Each registered NFT ID receives **10,000 CAPPY** (18 decimals), whether it was free-minted or paid-minted.
 - Only the wallet that received the NFT in the original mint `Transfer(address(0), minter, tokenId)` event can claim. A later NFT owner cannot claim that NFT's allocation.
-- One NFT is claimed per transaction, once. The fixed fee is **0.0003 BNB per NFT**, sent to treasury `0xea92a9df3ad64b2de2e84ccb2cf96b216b06c9bb`. If a claim fails, the entire transaction, including the fee transfer, reverts.
+- One NFT is claimed per transaction, once. The fixed fee is **0.00022 BNB per NFT**, sent to treasury `0xea92a9df3ad64b2de2e84ccb2cf96b216b06c9bb`. If a claim fails, the entire transaction, including the fee transfer, reverts.
 - The registry contract supports up to 10,000 IDs. At 10,000 registrations, the full 100,000,000 CAPPY supply is allocated. It has no owner withdrawal function.
 
 ## Important limitation of the existing NFT contract
@@ -39,7 +39,7 @@ The deploying wallet becomes registry owner. Register and audit all existing NFT
 ## Activate the website
 
 1. Set `CLAIM_CONTRACT` in `claim.html` to the verified deployed registry address.
-2. Test on BNB Chain with a registered minter: correct minter passes; unregistered ID and wrong wallet fail; a duplicate claim fails; exactly 0.0003 BNB reaches treasury; exactly 10,000 CAPPY reaches the original minter.
+2. Test on BNB Chain with a registered minter: correct minter passes; unregistered ID and wrong wallet fail; a duplicate claim fails; exactly 0.00022 BNB reaches treasury; exactly 10,000 CAPPY reaches the original minter.
 3. Only after those checks, change the coming-soon label/status on `index.html` to indicate claims are open and publish.
 
 The site asks minters to approve transactions in their own wallet. It never requests a seed phrase or private key.
